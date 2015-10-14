@@ -11,14 +11,17 @@ import io.github.hedgehog1029.frame.loader.Text;
 import io.github.hedgehog1029.frame.loader.exception.InaccessibleMethodException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandDispatcher {
 
@@ -44,7 +47,7 @@ public class CommandDispatcher {
         Bukkit.getLogger().info("[Frame] Registered " + commands.size() + " commands.");
     }
 
-    public final boolean dispatch(CommandSender sender, String cmd, String... args) throws IncorrectArgumentsException, NoPermissionException {
+    public final boolean dispatch(CommandSender sender, String cmd, String... oargs) throws IncorrectArgumentsException, NoPermissionException {
         if (!commands.containsKey(cmd))
             return true;
 
@@ -52,42 +55,32 @@ public class CommandDispatcher {
 
         ArrayList<Object> params = new ArrayList<>();
         Parameter[] methodArgs = command.getMethod().getParameters();
-
-        int senderArg = -1;
-
-        for (int i = 0; i < methodArgs.length; i++) {
-            if (methodArgs[i].isAnnotationPresent(Sender.class)) {
-                senderArg = i;
-            }
-        }
-
-        if (senderArg != -1) {
-            if (args.length < methodArgs.length - 1)
-                throw new IncorrectArgumentsException();
-        } else {
-            if (args.length < methodArgs.length)
-                throw new IncorrectArgumentsException();
-        }
+        ArrayList<String> args = new ArrayList<>(Arrays.asList(oargs));
 
         for (int i = 0; i < methodArgs.length; i++) {
             Parameter p = methodArgs[i];
-            String s = "";
+            String s;
 
-            if (args.length > 0)
-                if (senderArg == -1 || i == 0)
-                    s = args[i];
-                else
-                    s = args[i - 1];
+            try {
+                if (args.size() == 0) {
+                    s = "NULL";
+                } else {
+                    s = args.get(i);
+                }
+            } catch (IndexOutOfBoundsException e) {
+                throw new IncorrectArgumentsException("Wrong number of arguments!");
+            }
+
 
             if (String.class.isAssignableFrom(p.getType())) {
                 if (p.isAnnotationPresent(Text.class)) {
                     String text = "";
 
-                    for (int k = 0; k < args.length; k++) {
+                    for (int k = 0; k < args.size(); k++) {
                         if (k < i - 1)
                             continue;
 
-                        text += args[k] + " ";
+                        text += args.get(k) + " ";
                     }
 
                     params.add(text);
@@ -98,28 +91,35 @@ public class CommandDispatcher {
                 }
             } else if (int.class.isAssignableFrom(p.getType())) {
                 int j;
-                try { j = Integer.valueOf(s); } catch (NumberFormatException e) { throw new IncorrectArgumentsException(); }
+                try { j = Integer.valueOf(s); } catch (NumberFormatException e) { throw new IncorrectArgumentsException("Argument " + i + "is not an integer!"); }
 
                 params.add(j);
             } else if (boolean.class.isAssignableFrom(p.getType())) {
                 if (s.equalsIgnoreCase("true")) params.add(true);
                 else if (s.equalsIgnoreCase("false")) params.add(false);
-                else throw new IncorrectArgumentsException();
+                else throw new IncorrectArgumentsException("Argument " + i + " is not a boolean!");
             } else if (CommandSender.class.isAssignableFrom(p.getType())) {
                 if (p.isAnnotationPresent(Sender.class)) {
+                    args.add(i, "SENDERNULL");
+
                     params.add(sender);
                 } else {
                     Player pl = Bukkit.getServer().getPlayer(s);
 
                     if (pl != null) params.add(pl);
-                    else throw new IncorrectArgumentsException();
+                    else throw new IncorrectArgumentsException("Could not find player " + s + "!");
                 }
-            } else throw new IncorrectArgumentsException();
+            } else if (OfflinePlayer.class.isAssignableFrom(p.getType())) {
+                OfflinePlayer pl = Bukkit.getServer().getOfflinePlayer(s);
+
+                if (pl != null) params.add(pl);
+                else throw new IncorrectArgumentsException("Could not find offline player " + s + "!");
+            } else throw new IncorrectArgumentsException("The underlying function contains an unsupported parameter type (This is a PLUGIN issue, not a USER issue).");
         }
 
         // Check all arguments are fufilled
         if (params.size() != methodArgs.length) {
-            throw new IncorrectArgumentsException();
+            throw new IncorrectArgumentsException("Not enough arguments!");
         }
 
         // Check permission

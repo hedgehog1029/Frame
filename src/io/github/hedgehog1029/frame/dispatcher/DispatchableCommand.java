@@ -43,7 +43,7 @@ public class DispatchableCommand extends Command {
         try {
             return dispatcher.dispatch(commandSender, s, strings);
         } catch (IncorrectArgumentsException e) {
-            commandSender.sendMessage(ChatColor.RED + "Incorrect arguments! Usage: " + dispatcher.getCommand(s).usage());
+            commandSender.sendMessage(ChatColor.RED + e.getReason() + " Usage: " + dispatcher.getCommand(s).usage());
             return false;
         } catch (NoPermissionException e) {
             commandSender.sendMessage(ChatColor.RED + "You don't have permission!");
