@@ -41,7 +41,7 @@ public class CommandDispatcher {
     public void registerManagedCommandsWithBukkit() {
         CommandMap map = FrameInjector.getCommandMap();
         for (Map.Entry<String, CommandMapping> entry : commands.entrySet()) {
-            map.register(entry.getKey(), new DispatchableCommand(entry.getKey(), entry.getValue().getCommand()));
+            map.register(entry.getKey(), new DispatchableCommand(entry.getKey(), entry.getValue()));
         }
 
         Bukkit.getLogger().info("[Frame] Registered " + commands.size() + " commands.");
@@ -123,7 +123,7 @@ public class CommandDispatcher {
         }
 
         // Check permission
-        if (!command.getCommand().permission().equals("") && !sender.hasPermission(command.getCommand().permission())) {
+        if (command.getPermission() != null && !sender.hasPermission(command.getPermission())) {
             throw new NoPermissionException();
         }
 

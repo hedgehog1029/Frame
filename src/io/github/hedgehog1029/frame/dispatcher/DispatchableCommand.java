@@ -4,6 +4,7 @@ import io.github.hedgehog1029.frame.dispatcher.exception.IncorrectArgumentsExcep
 import io.github.hedgehog1029.frame.dispatcher.exception.NoPermissionException;
 import io.github.hedgehog1029.frame.dispatcher.help.ManagedHelpTopic;
 import io.github.hedgehog1029.frame.inject.FrameInjector;
+import io.github.hedgehog1029.frame.loader.CommandMapping;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,20 +19,27 @@ public class DispatchableCommand extends Command {
 
     io.github.hedgehog1029.frame.loader.Command command;
 
-    protected DispatchableCommand(String name, io.github.hedgehog1029.frame.loader.Command cmd) {
-        super(name);
+    protected DispatchableCommand(String alias, CommandMapping mapping) {
+        super(alias);
 
-        this.command = cmd;
+        this.command = mapping.getCommand();
 
-        this.description = cmd.desc();
-        this.usageMessage = cmd.usage();
+        this.description = mapping.getCommand().desc();
+        this.usageMessage = mapping.getCommand().usage();
 
-        ManagedHelpTopic help = new ManagedHelpTopic(name, cmd);
+        ManagedHelpTopic help = new ManagedHelpTopic(alias, command);
 
-        if (!FrameInjector.helpTopics.containsKey(cmd.helpTopic()))
-            FrameInjector.helpTopics.put(cmd.helpTopic(), new ArrayList<>());
+        if (mapping.getHelpTopic() != null) {
+            if (!FrameInjector.helpTopics.containsKey(mapping.getHelpTopic()))
+                FrameInjector.helpTopics.put(mapping.getHelpTopic(), new ArrayList<>());
 
-        FrameInjector.helpTopics.get(cmd.helpTopic()).add(help);
+            FrameInjector.helpTopics.get(mapping.getHelpTopic()).add(help);
+        } else {
+            if (!FrameInjector.helpTopics.containsKey("Commands"))
+                FrameInjector.helpTopics.put("Commands", new ArrayList<>());
+
+            FrameInjector.helpTopics.get("Commands").add(help);
+        }
 
         Bukkit.getHelpMap().addTopic(help);
     }
@@ -43,7 +51,7 @@ public class DispatchableCommand extends Command {
         try {
             return dispatcher.dispatch(commandSender, s, strings);
         } catch (IncorrectArgumentsException e) {
-            commandSender.sendMessage(ChatColor.RED + e.getReason() + " Usage: " + dispatcher.getCommand(s).usage());
+            commandSender.sendMessage(ChatColor.RED + e.getReason() + "\nUsage: " + dispatcher.getCommand(s).usage());
             return false;
         } catch (NoPermissionException e) {
             commandSender.sendMessage(ChatColor.RED + "You don't have permission!");

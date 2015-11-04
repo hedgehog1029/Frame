@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 public class CommandMapping {
     private Command command;
+    private Permission permission;
+    private HelpTopic helpTopic;
     private Method method;
     private Object container;
 
@@ -16,6 +18,14 @@ public class CommandMapping {
         this.command = cmd;
         this.method = method;
         this.container = object;
+
+        if (method.isAnnotationPresent(Permission.class)) {
+            this.permission = method.getAnnotation(Permission.class);
+        }
+
+        if (method.isAnnotationPresent(HelpTopic.class)) {
+            this.helpTopic = method.getAnnotation(HelpTopic.class);
+        }
     }
 
     public Command getCommand() {
@@ -24,6 +34,20 @@ public class CommandMapping {
 
     public Method getMethod() {
         return this.method;
+    }
+
+    public String getHelpTopic() {
+        if (helpTopic != null)
+            return this.helpTopic.value();
+        else
+            return null;
+    }
+
+    public String getPermission() {
+        if (permission != null)
+            return this.helpTopic.value();
+        else
+            return null;
     }
 
     public String[] getAliases() {

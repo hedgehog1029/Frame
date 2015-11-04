@@ -8,6 +8,4 @@ public @interface Command {
     String[] aliases();
     String usage() default "";
     String desc();
-    String permission() default "";
-    String helpTopic() default "Commands";
 }
