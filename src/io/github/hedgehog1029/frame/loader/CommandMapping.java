@@ -45,7 +45,7 @@ public class CommandMapping {
 
     public String getPermission() {
         if (permission != null)
-            return this.helpTopic.value();
+            return this.permission.value();
         else
             return null;
     }
