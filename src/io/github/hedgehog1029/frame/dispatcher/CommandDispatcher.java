@@ -1,14 +1,14 @@
 package io.github.hedgehog1029.frame.dispatcher;
 
+import io.github.hedgehog1029.frame.annotations.*;
+import io.github.hedgehog1029.frame.annotations.Optional;
 import io.github.hedgehog1029.frame.dispatcher.exception.CommandExistsException;
 import io.github.hedgehog1029.frame.dispatcher.exception.IncorrectArgumentsException;
 import io.github.hedgehog1029.frame.dispatcher.exception.NoPermissionException;
 import io.github.hedgehog1029.frame.inject.FrameInjector;
-import io.github.hedgehog1029.frame.loader.Command;
 import io.github.hedgehog1029.frame.loader.CommandMapping;
-import io.github.hedgehog1029.frame.loader.Sender;
-import io.github.hedgehog1029.frame.loader.Text;
 import io.github.hedgehog1029.frame.loader.exception.InaccessibleMethodException;
+import io.github.hedgehog1029.frame.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -18,10 +18,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CommandDispatcher {
 
@@ -44,7 +41,7 @@ public class CommandDispatcher {
             map.register(entry.getKey(), new DispatchableCommand(entry.getKey(), entry.getValue()));
         }
 
-        Bukkit.getLogger().info("[Frame] Registered " + commands.size() + " commands.");
+        Logger.info("Registered " + commands.size() + " commands.");
     }
 
     public final boolean dispatch(CommandSender sender, String cmd, String... oargs) throws IncorrectArgumentsException, NoPermissionException {
@@ -55,72 +52,64 @@ public class CommandDispatcher {
 
         ArrayList<Object> params = new ArrayList<>();
         Parameter[] methodArgs = command.getMethod().getParameters();
-        ArrayList<String> args = new ArrayList<>(Arrays.asList(oargs));
 
-        for (int i = 0; i < methodArgs.length; i++) {
-            Parameter p = methodArgs[i];
-            String s;
+	    ArrayDeque<Parameter> parameters = new ArrayDeque<>(Arrays.asList(methodArgs));
+        ArrayDeque<String> args = new ArrayDeque<>(Arrays.asList(oargs));
 
-            try {
-                if (args.size() == 0) {
-                    s = "NULL";
-                } else {
-                    s = args.get(i);
-                }
-            } catch (IndexOutOfBoundsException e) {
-                throw new IncorrectArgumentsException("Wrong number of arguments!");
-            }
+	    while (!parameters.isEmpty()) {
+		    Parameter current = parameters.pop();
 
+		    if (args.peek() == null && isOptional(current)) {
+			    params.add(null);
+			    continue;
+		    }
 
-            if (String.class.isAssignableFrom(p.getType())) {
-                if (p.isAnnotationPresent(Text.class)) {
-                    String text = "";
+		    if (args.peek() == null && !isOptional(current) && !isSender(current))
+			    throw new IncorrectArgumentsException(String.format("No argument provided for parameter %s!", current.getName()));
 
-                    for (int k = 0; k < args.size(); k++) {
-                        if (k < i - 1)
-                            continue;
+		    if (subclassOf(CommandSender.class, current)) {
+			    if (isSender(current)) {
+				    params.add(sender);
+			    } else {
+				    String spl = args.pop();
+				    Player pl = Bukkit.getServer().getPlayer(spl);
 
-                        text += args.get(k) + " ";
-                    }
+				    if (pl != null) params.add(pl);
+				    else throw new IncorrectArgumentsException(String.format("Couldn't find player %s! Are they online?", spl));
+			    }
+		    } else if (subclassOf(String.class, current)) {
+			    if (current.isAnnotationPresent(Text.class)) {
+				    StringBuilder builder = new StringBuilder();
 
-                    params.add(text);
+				    args.forEach(builder::append);
+				    params.add(builder.toString());
 
-                    break;
-                } else {
-                    params.add(s);
-                }
-            } else if (int.class.isAssignableFrom(p.getType())) {
-                int j;
-                try { j = Integer.valueOf(s); } catch (NumberFormatException e) { throw new IncorrectArgumentsException("Argument " + i + "is not an integer!"); }
+				    break; // this is a bad move but yeah
+			    }
+		    } else if (subclassOf(int.class, current)) {
+			    int arg;
 
-                params.add(j);
-            } else if (boolean.class.isAssignableFrom(p.getType())) {
-                if (s.equalsIgnoreCase("true")) params.add(true);
-                else if (s.equalsIgnoreCase("false")) params.add(false);
-                else throw new IncorrectArgumentsException("Argument " + i + " is not a boolean!");
-            } else if (CommandSender.class.isAssignableFrom(p.getType())) {
-                if (p.isAnnotationPresent(Sender.class)) {
-                    args.add(i, "SENDERNULL");
+			    try {
+				    arg = Integer.valueOf(args.pop());
+			    } catch (NumberFormatException e) {
+				    throw new IncorrectArgumentsException(String.format("Parameter %s requires an INTEGER.", current.getName()));
+			    }
 
-                    params.add(sender);
-                } else {
-                    Player pl = Bukkit.getServer().getPlayer(s);
+			    params.add(arg);
+		    } else if (subclassOf(boolean.class, current)) {
+			    String arg = args.pop();
 
-                    if (pl != null) params.add(pl);
-                    else throw new IncorrectArgumentsException("Could not find player " + s + "!");
-                }
-            } else if (OfflinePlayer.class.isAssignableFrom(p.getType())) {
-                OfflinePlayer pl = Bukkit.getServer().getOfflinePlayer(s);
+			    if (arg.equalsIgnoreCase("true")) params.add(true);
+			    else if (arg.equalsIgnoreCase("false")) params.add(false);
+			    else throw new IncorrectArgumentsException(String.format("Parameter %s requires a BOOLEAN.", current.getName()));
+		    } else if (subclassOf(OfflinePlayer.class, current)) {
+			    String spl = args.pop();
+			    OfflinePlayer opl = Bukkit.getServer().getOfflinePlayer(spl);
 
-                if (pl != null) params.add(pl);
-                else throw new IncorrectArgumentsException("Could not find offline player " + s + "!");
-            } else throw new IncorrectArgumentsException("The underlying function contains an unsupported parameter type (This is a PLUGIN issue, not a USER issue).");
-        }
-
-        // Check all arguments are fufilled
-        if (params.size() != methodArgs.length) {
-            throw new IncorrectArgumentsException("Not enough arguments!");
-        }
+			    if (opl != null) params.add(opl);
+			    else throw new IncorrectArgumentsException(String.format("Couldn't find offline player %s!", spl));
+		    }
+	    }
 
         // Check permission
         if (command.getPermission() != null && !sender.hasPermission(command.getPermission())) {
@@ -133,11 +122,25 @@ public class CommandDispatcher {
             return true;
         } catch (InaccessibleMethodException e) {
             sender.sendMessage(ChatColor.RED + "There was an error processing your command. Try again?");
-            Bukkit.getLogger().severe("Could not invoke method for command " + cmd + "!");
+            Logger.err("Could not invoke method for command " + cmd + "!");
             e.printStackTrace();
             return false;
         }
     }
+
+	// Utilities
+
+	private static boolean subclassOf(Class<?> c, Parameter p) {
+		return c.isAssignableFrom(p.getType());
+	}
+
+	private static boolean isOptional(Parameter p) {
+		return p.isAnnotationPresent(Optional.class);
+	}
+
+	private static boolean isSender(Parameter p) {
+		return p.isAnnotationPresent(Sender.class) && subclassOf(CommandSender.class, p);
+	}
 
     // Functions used in DispatchableCommand to get information about commands
 

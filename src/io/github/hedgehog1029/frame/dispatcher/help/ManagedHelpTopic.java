@@ -1,6 +1,6 @@
 package io.github.hedgehog1029.frame.dispatcher.help;
 
-import io.github.hedgehog1029.frame.loader.Command;
+import io.github.hedgehog1029.frame.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.help.HelpTopic;

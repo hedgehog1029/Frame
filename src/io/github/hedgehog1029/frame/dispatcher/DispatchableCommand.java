@@ -9,15 +9,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.help.HelpMap;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.help.HelpTopicFactory;
 
 import java.util.ArrayList;
 
 public class DispatchableCommand extends Command {
 
-    io.github.hedgehog1029.frame.loader.Command command;
+    io.github.hedgehog1029.frame.annotations.Command command;
 
     protected DispatchableCommand(String alias, CommandMapping mapping) {
         super(alias);
