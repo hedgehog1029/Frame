@@ -22,6 +22,8 @@ public class Logger {
 	}
 
 	private static String getPrefix() {
-		return "";
+		return "[Frame] ";
+		// I want to try and get the plugin of the calling class, but that seems difficult + probably laggy
+		// maybe instances...
 	}
 }
