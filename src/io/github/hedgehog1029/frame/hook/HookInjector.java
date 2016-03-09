@@ -16,6 +16,11 @@ public class HookInjector {
 					IPluginHook hook = HookLoader.get(f.getType());
 					f.setAccessible(true);
 
+					if (hook == null) {
+						Logger.warn("Couldn't find hook " + f.getType().getName() + ", was it registered?");
+						continue;
+					}
+
 					try {
 						if (hook.available())
 							f.set(instance, hook);

@@ -1,7 +1,9 @@
 package io.github.hedgehog1029.frame;
 
 import io.github.hedgehog1029.frame.config.ConfigurationBuilder;
+import io.github.hedgehog1029.frame.config.ConfigurationInjector;
 import io.github.hedgehog1029.frame.dispatcher.exception.CommandExistsException;
+import io.github.hedgehog1029.frame.hook.HookInjector;
 import io.github.hedgehog1029.frame.hook.HookLoader;
 import io.github.hedgehog1029.frame.hook.IPluginHook;
 import io.github.hedgehog1029.frame.inject.FrameInjector;
@@ -30,6 +32,9 @@ public class Frame {
         } catch (InaccessibleClassException e) {
             Logger.err("CommandLoader failed to instansiate class " + e.getOffender().getName() + "!");
         }
+
+	    ConfigurationInjector.inject();
+	    HookInjector.inject();
 
         for (Map.Entry<String, ArrayList<HelpTopic>> entry : FrameInjector.helpTopics.entrySet()) {
             Bukkit.getHelpMap().addTopic(new IndexHelpTopic(entry.getKey(), entry.getKey(), "", entry.getValue()));
