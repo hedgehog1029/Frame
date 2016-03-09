@@ -1,11 +1,12 @@
 package io.github.hedgehog1029.frame.loader;
 
+import io.github.hedgehog1029.frame.annotations.Command;
+import io.github.hedgehog1029.frame.annotations.HelpTopic;
+import io.github.hedgehog1029.frame.annotations.Permission;
 import io.github.hedgehog1029.frame.loader.exception.InaccessibleMethodException;
-import org.bukkit.Bukkit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class CommandMapping {
     private Command command;
