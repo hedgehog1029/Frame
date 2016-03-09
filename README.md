@@ -10,11 +10,11 @@ A plugin framework for Spigot and Bukkit.
 * Automated listener registering - lets you use Bukkit event listeners in a module.
 
 # Installation
-1. [Grab the latest build of Frame]() and drop it into your plugins folder.
+1. [Grab the latest build of Frame](https://github.com/hedgehog1029/Frame/releases) and drop it into your plugins folder.
 2. You're all set! All of your Frame-enabled plugins should now run perfectly.
 
 # Developer Usage
-[Grab the latest build of Frame]() and add it as a library dependency.
+[Grab the latest build of Frame](https://github.com/hedgehog1029/Frame/releases) and add it as a library dependency.
 
 The first thing you'll need to do is create a **module**. Modules are the core part of Frame; they can listen for Bukkit events and commands, use hooks and use configurations.
 Modules don't need to implement an interface, so the following is valid:
