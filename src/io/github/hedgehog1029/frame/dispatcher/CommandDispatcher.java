@@ -81,7 +81,7 @@ public class CommandDispatcher {
 			    if (current.isAnnotationPresent(Text.class)) {
 				    StringBuilder builder = new StringBuilder();
 
-				    args.forEach(builder::append);
+				    args.forEach(a -> builder.append(a).append(" "));
 				    params.add(builder.toString());
 
 				    break; // this is a bad move but yeah
