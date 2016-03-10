@@ -3,6 +3,7 @@ package io.github.hedgehog1029.frame;
 import io.github.hedgehog1029.frame.config.ConfigurationBuilder;
 import io.github.hedgehog1029.frame.config.ConfigurationInjector;
 import io.github.hedgehog1029.frame.dispatcher.exception.CommandExistsException;
+import io.github.hedgehog1029.frame.events.BukkitEventsInjector;
 import io.github.hedgehog1029.frame.hook.HookInjector;
 import io.github.hedgehog1029.frame.hook.HookLoader;
 import io.github.hedgehog1029.frame.hook.IPluginHook;
@@ -25,6 +26,8 @@ public class Frame {
 
         CommandLoader loader = new CommandLoader();
 
+	    // TODO: clean this into CommandLoader (possibly refactor to CommandInjector for consistency?)
+
         try {
             loader.load();
         } catch (CommandExistsException e) {
@@ -35,6 +38,7 @@ public class Frame {
 
 	    ConfigurationInjector.inject();
 	    HookInjector.inject();
+        BukkitEventsInjector.inject();
 
         for (Map.Entry<String, ArrayList<HelpTopic>> entry : FrameInjector.helpTopics.entrySet()) {
             Bukkit.getHelpMap().addTopic(new IndexHelpTopic(entry.getKey(), entry.getKey(), "", entry.getValue()));
@@ -44,7 +48,7 @@ public class Frame {
     }
 
     /**
-     * Util function for adding command-registering classes
+     * Util functions for adding modules, configurations and hooks.
      */
 
     public static void addModule(Class clazz) {

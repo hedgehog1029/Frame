@@ -25,9 +25,6 @@ public class ModuleLoader {
 		if (!instances.containsKey(clazz)) {
 			try {
 				instances.put(clazz, clazz.newInstance());
-
-				if (instances.get(clazz) instanceof Listener)
-					Bukkit.getPluginManager().registerEvents((Listener) instances.get(clazz), JavaPlugin.getProvidingPlugin(clazz));
 			} catch (InstantiationException | IllegalAccessException e) {
 				Logger.err("Failed to instantiate a module!");
 				return null;
