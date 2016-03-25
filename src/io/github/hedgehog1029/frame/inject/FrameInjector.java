@@ -1,40 +1,22 @@
 package io.github.hedgehog1029.frame.inject;
 
-import io.github.hedgehog1029.frame.dispatcher.CommandDispatcher;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.plugin.SimplePluginManager;
+import io.github.hedgehog1029.frame.module.ModuleLoader;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-/**
- * Singleton instances for Frame.
- */
 public class FrameInjector {
+	private ArrayList<Injector> injectors = new ArrayList<>();
 
-    private static final CommandDispatcher DISPATCHER = new CommandDispatcher();
+	public FrameInjector injector(Injector injector) {
+		injectors.add(injector);
+		return this;
+	}
 
-    public static CommandDispatcher getDispatcher() {
-        return DISPATCHER;
-    }
+    public void injectAll() {
+        for (Class<?> clazz : ModuleLoader.getModuleClasses()) {
+	        Object instance = ModuleLoader.getInstance(clazz);
 
-    public static CommandMap getCommandMap() {
-        CommandMap map = null;
-
-        try {
-            Field field = SimplePluginManager.class.getDeclaredField("commandMap");
-            field.setAccessible(true);
-
-            map = (CommandMap) field.get(Bukkit.getServer().getPluginManager());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+	        injectors.forEach(i -> i.inject(clazz, instance));
         }
-
-        return map;
     }
-
-    public static final HashMap<String, ArrayList<HelpTopic>> helpTopics = new HashMap<>();
 }

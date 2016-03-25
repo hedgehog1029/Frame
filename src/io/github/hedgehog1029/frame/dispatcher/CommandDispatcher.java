@@ -5,6 +5,7 @@ import io.github.hedgehog1029.frame.annotations.Optional;
 import io.github.hedgehog1029.frame.dispatcher.exception.CommandExistsException;
 import io.github.hedgehog1029.frame.dispatcher.exception.IncorrectArgumentsException;
 import io.github.hedgehog1029.frame.dispatcher.exception.NoPermissionException;
+import io.github.hedgehog1029.frame.dispatcher.help.HelpTopicUtil;
 import io.github.hedgehog1029.frame.inject.FrameInjector;
 import io.github.hedgehog1029.frame.loader.CommandMapping;
 import io.github.hedgehog1029.frame.loader.exception.InaccessibleMethodException;
@@ -15,41 +16,34 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.SimplePluginManager;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class CommandDispatcher {
 
-    private final Map<String, CommandMapping> commands = new HashMap<>();
+	private static CommandDispatcher dispatcher;
 
-    public void registerCommand(Command command, Method callback, Object instance) throws CommandExistsException {
+	public static CommandDispatcher getDispatcher() {
+		if (dispatcher == null) dispatcher = new CommandDispatcher();
+		return dispatcher;
+	}
+
+    public void registerCommand(Command command, Method callback, Object instance) {
         CommandMapping mapping = new CommandMapping(command, callback, instance);
 
-        for (String a : command.aliases()) {
-            if (commands.containsKey(a))
-                throw new CommandExistsException(a);
-
-            commands.put(a, mapping);
-        }
+	    try {
+		    getCommandMap().register(mapping.getName(), mapping);
+		    HelpTopicUtil.addHelpTopic(mapping);
+	    } catch (UnsupportedOperationException e) {
+		    e.printStackTrace();
+	    }
     }
 
-    public void registerManagedCommandsWithBukkit() {
-        CommandMap map = FrameInjector.getCommandMap();
-        for (Map.Entry<String, CommandMapping> entry : commands.entrySet()) {
-            map.register(entry.getKey(), new DispatchableCommand(entry.getKey(), entry.getValue()));
-        }
-
-        Logger.info("Registered " + commands.size() + " commands.");
-    }
-
-    public final boolean dispatch(CommandSender sender, String cmd, String... oargs) throws IncorrectArgumentsException, NoPermissionException {
-        if (!commands.containsKey(cmd))
-            return true;
-
-        CommandMapping command = commands.get(cmd);
-
+    public final boolean dispatch(CommandSender sender, CommandMapping command, String... oargs) throws IncorrectArgumentsException, NoPermissionException {
         ArrayList<Object> params = new ArrayList<>();
         Parameter[] methodArgs = command.getMethod().getParameters();
 
@@ -122,7 +116,7 @@ public class CommandDispatcher {
             return true;
         } catch (InaccessibleMethodException e) {
             sender.sendMessage(ChatColor.RED + "There was an error processing your command. Try again?");
-            Logger.err("Could not invoke method for command " + cmd + "!");
+            Logger.err("Could not invoke method for command " + command.getName() + "!");
             e.printStackTrace();
             return false;
         }
@@ -142,9 +136,19 @@ public class CommandDispatcher {
 		return p.isAnnotationPresent(Sender.class) && subclassOf(CommandSender.class, p);
 	}
 
-    // Functions used in DispatchableCommand to get information about commands
+	private static CommandMap map;
+	private static CommandMap getCommandMap() {
+		if (map == null) {
+			try {
+				Field field = SimplePluginManager.class.getDeclaredField("commandMap");
+				field.setAccessible(true);
 
-    public Command getCommand(String name) {
-        return commands.get(name).getCommand();
-    }
+				map = (CommandMap) field.get(Bukkit.getServer().getPluginManager());
+			} catch (NoSuchFieldException | IllegalAccessException e) {
+				Logger.err("Problem getting the command map!");
+			}
+		}
+
+		return map;
+	}
 }

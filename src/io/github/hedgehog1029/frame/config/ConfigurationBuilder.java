@@ -2,10 +2,13 @@ package io.github.hedgehog1029.frame.config;
 
 import io.github.hedgehog1029.frame.annotations.Configuration;
 import io.github.hedgehog1029.frame.annotations.Setting;
-import io.github.hedgehog1029.frame.config.pickle.Pickle;
 import io.github.hedgehog1029.frame.logger.Logger;
-import org.json.JSONObject;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -35,11 +38,17 @@ public class ConfigurationBuilder {
 		if (config == null)
 			return;
 
-		JSONObject result = buildToJson(config);
 		String name = config.getClass().getDeclaredAnnotation(Configuration.class).value();
+		File file = new File(JavaPlugin.getProvidingPlugin(clazz).getDataFolder(), String.format("%s.yml", name));
+		FileConfiguration configFile = YamlConfiguration.loadConfiguration(file);
 
-		Pickle pickle = Pickle.open(String.format("%s.json", name));
-		pickle.writer().write(result).end();
+		buildToConfig(config, configFile);
+
+		try {
+			configFile.save(file);
+		} catch (IOException e) {
+			Logger.err("Couldn't sync config " + name + " to its file!");
+		}
 	}
 
 	public static void syncAll() {
@@ -66,48 +75,38 @@ public class ConfigurationBuilder {
 		}
 
 		String name = object.getClass().getDeclaredAnnotation(Configuration.class).value();
+		File file = new File(JavaPlugin.getProvidingPlugin(clazz).getDataFolder(), String.format("%s.yml", name));
+		FileConfiguration configFile = YamlConfiguration.loadConfiguration(file);
 
-		String filename = String.format("%s.json", name);
-		if (Pickle.exists(filename)) {
-			Pickle pickle = Pickle.open(filename);
+		buildFromConfig(configFile, clazz, object);
 
-			JSONObject data = pickle.reader().read();
-
-			buildFromJson(data, clazz, object);
-
-			pickle.reader().end();
-		}
-
-		sync(clazz);
+		//sync(clazz);
 
 		return object;
 	}
 
-	private static JSONObject buildToJson(Object instance) {
-		JSONObject config = new JSONObject();
+	private static void buildToConfig(Object instance, FileConfiguration config) {
 		Class clazz = instance.getClass();
 
 		for (Field field : clazz.getDeclaredFields()) {
 			if (field.isAnnotationPresent(Setting.class)) {
 				try {
 					field.setAccessible(true);
-					config.put(field.getName(), field.get(instance));
+					config.set(field.getName(), field.get(instance));
 				} catch (IllegalAccessException | ClassCastException e) {
 					Logger.err("Failed to build a configuration - couldn't access a field!");
 				}
 			}
 		}
-
-		return config;
 	}
 
-	private static Object buildFromJson(JSONObject object, Class clazz, Object instance) {
-		for (String key : object.keySet()) {
+	private static Object buildFromConfig(FileConfiguration config, Class clazz, Object instance) {
+		for (String key : config.getKeys(true)) {
 			try {
 				Field field = clazz.getField(key);
 
 				field.setAccessible(true);
-				field.set(instance, object.get(key));
+				field.set(instance, config.get(key));
 			} catch (NoSuchFieldException ignored) {
 				Logger.log(Level.FINER, "A key in JSON was not found in the class it is being rebuilt to.");
 			} catch (IllegalAccessException e) {
@@ -115,6 +114,6 @@ public class ConfigurationBuilder {
 			}
 		}
 
-		return object;
+		return instance;
 	}
 }
