@@ -12,6 +12,7 @@ import io.github.hedgehog1029.frame.inject.FrameInjector;
 import io.github.hedgehog1029.frame.loader.CommandInjector;
 import io.github.hedgehog1029.frame.loader.exception.InaccessibleClassException;
 import io.github.hedgehog1029.frame.logger.Logger;
+import io.github.hedgehog1029.frame.module.ModuleInjector;
 import io.github.hedgehog1029.frame.module.ModuleLoader;
 
 public class Frame {
@@ -22,6 +23,7 @@ public class Frame {
 	    new FrameInjector()
 			    .injector(new CommandInjector())
 			    .injector(new HookInjector())
+			    .injector(new ModuleInjector())
 			    .injector(new ConfigurationInjector())
 			    .injector(new BukkitEventsInjector())
 			    .injectAll();
