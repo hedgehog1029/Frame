@@ -1,12 +1,12 @@
 package io.github.hedgehog1029.frame.dispatcher;
 
-import io.github.hedgehog1029.frame.annotations.*;
+import io.github.hedgehog1029.frame.annotations.Command;
 import io.github.hedgehog1029.frame.annotations.Optional;
-import io.github.hedgehog1029.frame.dispatcher.exception.CommandExistsException;
+import io.github.hedgehog1029.frame.annotations.Sender;
+import io.github.hedgehog1029.frame.annotations.Text;
 import io.github.hedgehog1029.frame.dispatcher.exception.IncorrectArgumentsException;
 import io.github.hedgehog1029.frame.dispatcher.exception.NoPermissionException;
 import io.github.hedgehog1029.frame.dispatcher.help.HelpTopicUtil;
-import io.github.hedgehog1029.frame.inject.FrameInjector;
 import io.github.hedgehog1029.frame.loader.CommandMapping;
 import io.github.hedgehog1029.frame.loader.exception.InaccessibleMethodException;
 import io.github.hedgehog1029.frame.logger.Logger;
@@ -21,7 +21,9 @@ import org.bukkit.plugin.SimplePluginManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CommandDispatcher {
 

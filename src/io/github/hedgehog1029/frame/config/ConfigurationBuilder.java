@@ -10,18 +10,28 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
 public class ConfigurationBuilder {
 
+	private static ArrayList<Class> awaiting = new ArrayList<>();
 	private static HashMap<Class, Object> configurations = new HashMap<>();
 
 	public static void add(Class clazz) {
-		if (!clazz.isAnnotationPresent(Configuration.class))
+		if (!clazz.isAnnotationPresent(Configuration.class)) {
+			Logger.warn("No @Configuration annotation on " + clazz.getName() + "!");
 			return;
+		}
 
-		configurations.put(clazz, build(clazz));
+		awaiting.add(clazz);
+	}
+
+	public static void buildAwaiting() {
+		for (Class c : awaiting) {
+			configurations.put(c, build(c));
+		}
 	}
 
 	public static Object get(Class clazz) {
@@ -40,7 +50,7 @@ public class ConfigurationBuilder {
 
 		String name = config.getClass().getDeclaredAnnotation(Configuration.class).value();
 		File file = new File(JavaPlugin.getProvidingPlugin(clazz).getDataFolder(), String.format("%s.yml", name));
-		FileConfiguration configFile = YamlConfiguration.loadConfiguration(file);
+		FileConfiguration configFile = new YamlConfiguration();
 
 		buildToConfig(config, configFile);
 
@@ -101,14 +111,14 @@ public class ConfigurationBuilder {
 	}
 
 	private static Object buildFromConfig(FileConfiguration config, Class clazz, Object instance) {
-		for (String key : config.getKeys(true)) {
+		for (String key : config.getKeys(false)) {
 			try {
 				Field field = clazz.getField(key);
 
 				field.setAccessible(true);
-				field.set(instance, config.get(key));
+				field.set(instance, field.getType().cast(config.get(key)));
 			} catch (NoSuchFieldException ignored) {
-				Logger.log(Level.FINER, "A key in JSON was not found in the class it is being rebuilt to.");
+				Logger.log(Level.FINER, "A key in YAML was not found in the class it is being rebuilt to.");
 			} catch (IllegalAccessException e) {
 				Logger.err("Couldn't access a field when rebuilding a config!");
 			}

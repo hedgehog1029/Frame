@@ -16,6 +16,7 @@ public class ConfigurationInjector implements Injector {
 
 				if (config != null) {
 					try {
+						f.setAccessible(true);
 						f.set(instance, config);
 					} catch (IllegalAccessException e) {
 						Logger.err("Failed to inject a configuration into field " + f.getName() + " in " + c.getName());
