@@ -23,6 +23,9 @@ public class Frame {
 		    ConfigurationBuilder.buildAwaiting();
 	    } catch (Exception e) {
 		    Logger.err("Error building configurations!");
+		    Logger.err(e.getMessage());
+
+		    e.printStackTrace();
 	    }
 
 	    new FrameInjector()
@@ -53,4 +56,8 @@ public class Frame {
     public static void addHook(Class<? extends IPluginHook> clazz) {
 	    HookLoader.addHook(clazz);
     }
+
+	public static Object getConfig(Class clazz) {
+		return ConfigurationBuilder.get(clazz);
+	}
 }

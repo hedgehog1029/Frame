@@ -81,6 +81,8 @@ public class CommandDispatcher {
 				    params.add(builder.toString());
 
 				    break; // this is a bad move but yeah
+			    } else {
+				    params.add(args.pop());
 			    }
 		    } else if (subclassOf(int.class, current)) {
 			    int arg;

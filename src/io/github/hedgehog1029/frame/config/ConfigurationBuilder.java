@@ -3,6 +3,7 @@ package io.github.hedgehog1029.frame.config;
 import io.github.hedgehog1029.frame.annotations.Configuration;
 import io.github.hedgehog1029.frame.annotations.Setting;
 import io.github.hedgehog1029.frame.logger.Logger;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +32,8 @@ public class ConfigurationBuilder {
 	public static void buildAwaiting() {
 		for (Class c : awaiting) {
 			configurations.put(c, build(c));
+
+			sync(c);
 		}
 	}
 
@@ -90,8 +93,6 @@ public class ConfigurationBuilder {
 
 		buildFromConfig(configFile, clazz, object);
 
-		//sync(clazz);
-
 		return object;
 	}
 
@@ -116,7 +117,7 @@ public class ConfigurationBuilder {
 				Field field = clazz.getField(key);
 
 				field.setAccessible(true);
-				field.set(instance, field.getType().cast(config.get(key)));
+				fieldSet(field, config, instance, key);
 			} catch (NoSuchFieldException ignored) {
 				Logger.log(Level.FINER, "A key in YAML was not found in the class it is being rebuilt to.");
 			} catch (IllegalAccessException e) {
@@ -125,5 +126,17 @@ public class ConfigurationBuilder {
 		}
 
 		return instance;
+	}
+
+	private static void fieldSet(Field f, FileConfiguration config, Object instance, String key) throws IllegalAccessException {
+		if (config.get(key) instanceof Boolean) {
+			f.set(instance, config.getBoolean(key));
+		} else if (config.get(key) instanceof Integer) {
+			f.set(instance, config.getInt(key));
+		} else if (config.get(key) instanceof ConfigurationSection) {
+			f.set(instance, f.getType().cast(((ConfigurationSection) config.get(key)).getValues(false)));
+		} else {
+			f.set(instance, f.getType().cast(config.get(key)));
+		}
 	}
 }
