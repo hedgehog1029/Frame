@@ -26,7 +26,7 @@ public class MyModule {
 }
 ```
 
-To register this module, you simply need to call `Frame.addModule()` from your plugin `onEnable()` method, like so:
+To register this module, you simply need to call `Frame.addModule()` in your plugin's `onEnable()` method, like so:
 ```java
 @Override
 public void onEnable() {
