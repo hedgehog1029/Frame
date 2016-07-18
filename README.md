@@ -26,9 +26,13 @@ public class MyModule {
 }
 ```
 
-To register this module, you simply need to call `Frame.addModule()`, like so:
+To register this module, you simply need to call `Frame.addModule()` in your plugin's `onEnable()` method, like so:
 ```java
-Frame.addModule(MyModule.class);
+@Override
+public void onEnable() {
+ Frame.addModule(MyModule.class);
+ // Your code
+}
 ```
 
 Frame handles all module instantiation in order to have a unified instance across the framework. If you wish to get hold of this instance, you can use `ModuleLoader.getInstance(<Module Class>)`.
