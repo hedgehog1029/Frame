@@ -41,10 +41,14 @@ public class Frame {
         Logger.info("Finished Frame initialization.");
     }
 
-    /**
+    /*
      * Util functions for adding modules, configurations and hooks.
      */
 
+	/**
+	 * Register and load your module into Frame
+	 * @param clazz Class containing your module
+     */
     public static void addModule(Class clazz) {
         ModuleLoader.add(clazz);
     }
@@ -53,6 +57,10 @@ public class Frame {
 		ConfigurationBuilder.add(clazz);
 	}
 
+    /**
+     * Register specified hook in Frame
+     * @param clazz Class that implements {@link IPluginHook}
+     */
     public static void addHook(Class<? extends IPluginHook> clazz) {
 	    HookLoader.addHook(clazz);
     }
