@@ -1,4 +1,4 @@
-# Frame
+# Frame [![Discord](https://img.shields.io/badge/discord-join-7286da.svg)](https://discord.gg/PWNHf)
 A plugin framework for Spigot and Bukkit.
 
 If you're looking for support or just a place to talk about the plugin, join the official [Scarlet Crystal Public Discord](https://discord.gg/PWNHf)!
