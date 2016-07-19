@@ -3,6 +3,6 @@ machine:
     version: oraclejdk8
 test:
   override:
-    - mvn -o package
+    - mvn package
   post:
     - cp -r target/frame*.jar $CIRCLE_ARTIFACTS/
