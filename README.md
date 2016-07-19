@@ -1,5 +1,5 @@
 # Frame [![Discord](https://img.shields.io/badge/discord-join-7286da.svg)](https://discord.gg/PWNHf)
-[![CircleCI](https://img.shields.io/circleci/project/hedgehog1029/Frame.svg?maxAge=2592000)](https://circleci.com/gh/hedgehog1029/Frame/)
+[![CircleCI](https://img.shields.io/circleci/project/hedgehog1029/Frame.svg)](https://circleci.com/gh/hedgehog1029/Frame/)
 
 A plugin framework for Spigot and Bukkit.
 
