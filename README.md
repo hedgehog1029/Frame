@@ -1,6 +1,8 @@
 # Frame
 A plugin framework for Spigot and Bukkit.
 
+If you're looking for support or just a place to talk about the plugin, join the official [Scarlet Crystal Public Discord](https://discord.gg/PWNHf)!
+
 # Features
 * Parametric Command Framework - easily register commands, without all the hassle!
 * Automated command registering - automatically register those commands under Bukkit/Spigot!
