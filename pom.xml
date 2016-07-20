@@ -6,7 +6,7 @@
 
     <groupId>io.github.hedgehog1029</groupId>
     <artifactId>frame</artifactId>
-    <version>0.2.4</version>
+    <version>0.2.5</version>
     <build>
         <plugins>
             <plugin>
