@@ -1,0 +1,3 @@
+name: Test Plugin for Frame
+main: com.frame.TestPlugin
+version: 0.0.1
