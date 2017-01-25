@@ -1,9 +1,9 @@
-# Frame [![Discord](https://img.shields.io/badge/discord-join-7286da.svg)](https://discord.gg/PWNHf)
+# Frame [![Discord](https://img.shields.io/badge/discord-join-7286da.svg)](https://discord.gg/7FgnZG7)
 [![CircleCI](https://img.shields.io/circleci/project/hedgehog1029/Frame.svg)](https://circleci.com/gh/hedgehog1029/Frame/)
 
 A plugin framework for Spigot and Bukkit.
 
-If you're looking for support or just a place to talk about the plugin, join the official [Scarlet Crystal Public Discord](https://discord.gg/PWNHf)!
+If you're looking for support or just a place to talk about the plugin, join the official [Scarlet Crystal Public Discord](https://discord.gg/7FgnZG7)!
 
 # Features
 * Parametric Command Framework - easily register commands, without all the hassle!
