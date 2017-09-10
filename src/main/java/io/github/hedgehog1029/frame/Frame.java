@@ -9,13 +9,13 @@ import io.github.hedgehog1029.frame.hook.HookLoader;
 import io.github.hedgehog1029.frame.hook.IPluginHook;
 import io.github.hedgehog1029.frame.inject.FrameInjector;
 import io.github.hedgehog1029.frame.loader.CommandInjector;
+import io.github.hedgehog1029.frame.loader.InitializationManager;
 import io.github.hedgehog1029.frame.logger.Logger;
 import io.github.hedgehog1029.frame.module.ModuleInjector;
 import io.github.hedgehog1029.frame.module.ModuleLoader;
 
-public class Frame {
-
-    public static void main() {
+class Frame {
+    static void main() {
         Logger.info("Start Frame initialization.");
 
 	    // Build configurations
@@ -37,6 +37,8 @@ public class Frame {
 			    .injectAll();
 
 	    HelpTopicUtil.index();
+	    InitializationManager.primaryPost();
+	    InitializationManager.postInit();
 
         Logger.info("Finished Frame initialization.");
     }
@@ -53,6 +55,10 @@ public class Frame {
         ModuleLoader.add(clazz);
     }
 
+	/**
+	 * Register a configuration class
+	 * @param clazz Class annotated with {@link io.github.hedgehog1029.frame.annotations.Configuration}
+	 */
 	public static void addConfiguration(Class clazz) {
 		ConfigurationBuilder.add(clazz);
 	}
@@ -67,5 +73,9 @@ public class Frame {
 
 	public static Object getConfig(Class clazz) {
 		return ConfigurationBuilder.get(clazz);
+	}
+
+	public static void reloadConfig(Class clazz) {
+		ConfigurationBuilder.reload(clazz);
 	}
 }

@@ -129,11 +129,15 @@ public class ConfigurationBuilder {
 	}
 
 	private static void fieldSet(Field f, FileConfiguration config, Object instance, String key) throws IllegalAccessException {
-		if (config.get(key) instanceof Boolean) {
+		if (config.isBoolean(key)) {
 			f.set(instance, config.getBoolean(key));
-		} else if (config.get(key) instanceof Integer) {
+		} else if (config.isInt(key)) {
 			f.set(instance, config.getInt(key));
-		} else if (config.get(key) instanceof ConfigurationSection) {
+		} else if (config.isString(key)) {
+			f.set(instance, config.getString(key));
+		} else if (config.isOfflinePlayer(key)) {
+			f.set(instance, config.getOfflinePlayer(key));
+		} else if (config.isConfigurationSection(key)) {
 			f.set(instance, f.getType().cast(((ConfigurationSection) config.get(key)).getValues(false)));
 		} else {
 			f.set(instance, f.getType().cast(config.get(key)));

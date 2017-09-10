@@ -24,6 +24,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 public class CommandDispatcher {
 
@@ -84,6 +85,10 @@ public class CommandDispatcher {
 			    } else {
 				    params.add(args.pop());
 			    }
+		    } else if (subclassOf(String[].class, current)) {
+		    	String[] rest = args.toArray(new String[args.size()]);
+
+			    params.add(rest);
 		    } else if (subclassOf(int.class, current)) {
 			    int arg;
 
@@ -140,7 +145,7 @@ public class CommandDispatcher {
 		return p.isAnnotationPresent(Sender.class) && subclassOf(CommandSender.class, p);
 	}
 
-	private static CommandMap map;
+	private static CommandMap map = null;
 	private static CommandMap getCommandMap() {
 		if (map == null) {
 			try {
