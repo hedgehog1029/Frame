@@ -10,10 +10,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
      maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
-    compile 'org.bukkit:bukkit:1.12.1-R0.1-SNAPSHOT'
 }
