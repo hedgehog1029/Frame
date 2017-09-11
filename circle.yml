@@ -5,4 +5,4 @@ test:
   override:
     - gradle jar
   post:
-    - cp -r target/frame*.jar $CIRCLE_ARTIFACTS/
+    - cp -r build/libs/frame-*.jar $CIRCLE_ARTIFACTS/
