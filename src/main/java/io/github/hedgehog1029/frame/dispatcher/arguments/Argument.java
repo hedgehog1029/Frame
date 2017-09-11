@@ -24,6 +24,10 @@ public class Argument {
 		return this.bound.getName();
 	}
 
+	public Parameter getParameter() {
+		return bound;
+	}
+
 	@Override
 	public String toString() {
 		return this.argument;

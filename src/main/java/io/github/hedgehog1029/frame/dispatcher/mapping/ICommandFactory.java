@@ -5,5 +5,5 @@ package io.github.hedgehog1029.frame.dispatcher.mapping;
  * Licensed under MIT.
  */
 public interface ICommandFactory {
-	void registerCommand(BaseCommandMapping command);
+	void registerCommand(CommandMapping command);
 }

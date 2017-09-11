@@ -1,14 +1,24 @@
 package io.github.hedgehog1029.frame.dispatcher;
 
+import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
+import io.github.hedgehog1029.frame.dispatcher.exception.UnsupportedTypeException;
+import io.github.hedgehog1029.frame.dispatcher.mapping.CommandMapping;
 import io.github.hedgehog1029.frame.util.Namespace;
 
 public class CommandDispatcher {
 	private final ArgumentTransformer transformer = new ArgumentTransformer();
 
-	public void dispatch(String command, String[] arguments, Namespace namespace) {
-		// TODO: The dispatcher probably won't actually hold onto the commands,
-		// TODO: because they're registered to whatever external service.
-		// TODO: For this reason, this signature will change shortly to accept a CommandMapping.
+	public void dispatch(CommandMapping command, String[] arguments, Namespace namespace) {
+		try {
+			Object[] transformed = this.transformer.transform(arguments, command.getWrappedMethod().getParameters(), namespace);
+
+			command.getWrappedMethod().invoke(transformed);
+		} catch (UnsupportedTypeException e) {
+			// TODO: Not sure how to get these out. Possibly an interface so the user can do whatever with it?
+			e.printStackTrace();
+		} catch (DispatcherException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public ArgumentTransformer getTransformer() {

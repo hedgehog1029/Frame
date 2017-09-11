@@ -10,5 +10,6 @@ import io.github.hedgehog1029.frame.util.Namespace;
 public interface ICommandArguments {
 	boolean hasNext();
 	Argument next() throws MissingArgumentsException;
+	Argument peek();
 	Namespace getNamespace();
 }

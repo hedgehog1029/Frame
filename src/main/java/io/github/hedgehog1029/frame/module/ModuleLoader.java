@@ -10,14 +10,14 @@ import java.util.HashMap;
  * Licensed under MIT.
  */
 public class ModuleLoader {
-	private HashMap<TypeToken, LoadedModule> loadedModules = new HashMap<>();
+	private HashMap<TypeToken<?>, LoadedModule<?>> loadedModules = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public <T> LoadedModule<T> getModule(TypeToken<T> key) {
-		return this.loadedModules.get(key);
+		return (LoadedModule<T>) this.loadedModules.get(key);
 	}
 
-	public Collection<LoadedModule> getAllModules() {
+	public Collection<LoadedModule<?>> getAllModules() {
 		return this.loadedModules.values();
 	}
 

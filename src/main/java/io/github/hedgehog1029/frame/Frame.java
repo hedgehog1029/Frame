@@ -14,47 +14,54 @@ class Frame {
 	private FrameInjector injector;
 	private ICommandFactory commandFactory;
 
-    public Frame() {
-    	this.dispatcher = new CommandDispatcher();
-    	this.loader = new ModuleLoader();
-    	this.injector = new FrameInjector();
+	public Frame() {
+		this.dispatcher = new CommandDispatcher();
+		this.loader = new ModuleLoader();
+		this.injector = new FrameInjector();
 
-    	this.injector.injector(new CommandInjector(this.dispatcher));
-    }
+		this.injector.injector(new CommandInjector(this.dispatcher, this.commandFactory));
+	}
 
 	/**
 	 * Load a binding provider, allowing you to register providers for types.
+	 *
 	 * @param module Binding provider instance
 	 */
 	public void loadBindings(IBindingProvider module) {
-    	module.configure(this.dispatcher.getTransformer());
-    }
+		module.configure(this.dispatcher.getTransformer());
+	}
 
 	/**
 	 * Load an instance as a Frame module.
+	 *
 	 * @param module Module to load
-	 * @param <T> Type token
+	 * @param <T>    Type token
 	 */
 	public <T> void loadModule(T module) {
-    	this.loader.loadModule(module);
-    }
+		this.loader.loadModule(module);
+	}
 
 	/**
 	 * Add a class that gets given modules to modify their state.
+	 *
 	 * @param injector Injection callback to add to Frame's injector
 	 */
 	public void addInjector(Injector injector) {
-    	this.injector.injector(injector);
-    }
+		this.injector.injector(injector);
+	}
 
-    public void setCommandFactory(ICommandFactory factory) {
+	public void setCommandFactory(ICommandFactory factory) {
 		this.commandFactory = factory;
-    }
+	}
+
+	public ICommandFactory getCommandFactory() {
+		return this.commandFactory;
+	}
 
 	/**
 	 * Traverses all modules with the injector and builds the command graph.
 	 */
 	public void go() {
 		this.injector.injectAll(this.loader);
-    }
+	}
 }
