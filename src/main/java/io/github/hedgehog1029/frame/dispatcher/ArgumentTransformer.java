@@ -1,6 +1,5 @@
 package io.github.hedgehog1029.frame.dispatcher;
 
-import io.github.hedgehog1029.frame.dispatcher.arguments.Argument;
 import io.github.hedgehog1029.frame.dispatcher.arguments.CommandArgumentsDeque;
 import io.github.hedgehog1029.frame.dispatcher.bindings.BindingList;
 import io.github.hedgehog1029.frame.dispatcher.bindings.TypeToken;
@@ -11,6 +10,7 @@ import io.github.hedgehog1029.frame.util.Namespace;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,22 +24,11 @@ public class ArgumentTransformer {
 		this.bindings.addBinding(TypeToken.get(clazz), provider);
 	}
 
-	private List<Argument> bindParameters(String[] arguments, List<Parameter> parameters) throws IndexOutOfBoundsException {
-		ArrayList<Argument> args = new ArrayList<>();
-		int size = arguments.length;
-
-		for (int i = 0; i < size; i++) {
-			String stringArg = arguments[i];
-			Parameter paramArg = parameters.get(i);
-
-			args.add(new Argument(paramArg, stringArg));
-		}
-
-		return args;
-	}
-
+	// Problem: quoted args (not supported yet, but could be) and optional args don't work here at all
+	// (actually it doesn't work whatsoever)
+	// Solution: rewrite dis
 	public Object[] transform(String[] arguments, List<Parameter> parameters, Namespace namespace) throws DispatcherException, IndexOutOfBoundsException {
-		CommandArgumentsDeque boundArgs = new CommandArgumentsDeque(this.bindParameters(arguments, parameters), namespace);
+		CommandArgumentsDeque boundArgs = new CommandArgumentsDeque(Arrays.asList(arguments), namespace);
 		List<Object> transformed = new ArrayList<>();
 
 		for (Parameter param : parameters) {
@@ -50,7 +39,7 @@ public class ArgumentTransformer {
 				throw new UnsupportedTypeException("Parameter type " + token.getType() + " has no provider.");
 			}
 
-			Object provided = p.provide(boundArgs);
+			Object provided = p.provide(boundArgs, param);
 			transformed.add(provided);
 		}
 

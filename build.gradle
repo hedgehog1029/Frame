@@ -9,6 +9,14 @@ description = "A plugin framework for Spigot/Bukkit."
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            mavenLocal()
+        }
+    }
+}
+
 repositories {
      maven { url "http://repo.maven.apache.org/maven2" }
 }

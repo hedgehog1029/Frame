@@ -11,10 +11,10 @@ import java.util.List;
  * Licensed under MIT.
  */
 public class CommandArgumentsDeque implements ICommandArguments {
-	private final ArrayDeque<Argument> arguments;
+	private final ArrayDeque<String> arguments;
 	private final Namespace namespace;
 
-	public CommandArgumentsDeque(List<Argument> arguments, Namespace namespace) {
+	public CommandArgumentsDeque(List<String> arguments, Namespace namespace) {
 		this.arguments = new ArrayDeque<>(arguments);
 		this.namespace = namespace;
 	}
@@ -25,12 +25,12 @@ public class CommandArgumentsDeque implements ICommandArguments {
 	}
 
 	@Override
-	public Argument next() throws MissingArgumentsException {
+	public String next() throws MissingArgumentsException {
 		return arguments.poll();
 	}
 
 	@Override
-	public Argument peek() {
+	public String peek() {
 		return arguments.peek();
 	}
 

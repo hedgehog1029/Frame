@@ -5,6 +5,8 @@ import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.MissingArgumentsException;
 import io.github.hedgehog1029.frame.dispatcher.provider.Provider;
 
+import java.lang.reflect.Parameter;
+
 /**
  * Written by @offbeatwitch.
  * Licensed under MIT.
@@ -19,44 +21,43 @@ public class PrimitiveProviders {
 
 	public static class StringProvider extends ConsumptionProvider<String> {
 		@Override
-		public String provide(ICommandArguments args) throws DispatcherException {
-			return args.next().toString();
+		public String provide(ICommandArguments args, Parameter param) throws DispatcherException {
+			return args.next();
 		}
 	}
 
 	public static class IntegerProvider extends ConsumptionProvider<Integer> {
 		@Override
-		public Integer provide(ICommandArguments args) throws MissingArgumentsException, NumberFormatException {
-			return Integer.valueOf(args.next().toString());
+		public Integer provide(ICommandArguments args, Parameter param) throws MissingArgumentsException, NumberFormatException {
+			return Integer.valueOf(args.next());
 		}
-
 	}
 
 	public static class FloatProvider extends ConsumptionProvider<Float> {
 		@Override
-		public Float provide(ICommandArguments args) throws DispatcherException, NumberFormatException {
-			return Float.valueOf(args.next().toString());
+		public Float provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
+			return Float.valueOf(args.next());
 		}
 	}
 
 	public static class DoubleProvider extends ConsumptionProvider<Double> {
 		@Override
-		public Double provide(ICommandArguments args) throws DispatcherException, NumberFormatException {
-			return Double.valueOf(args.next().toString());
+		public Double provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
+			return Double.valueOf(args.next());
 		}
 	}
 
 	public static class ShortProvider extends ConsumptionProvider<Short> {
 		@Override
-		public Short provide(ICommandArguments args) throws DispatcherException, NumberFormatException {
-			return Short.valueOf(args.next().toString());
+		public Short provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
+			return Short.valueOf(args.next());
 		}
 	}
 
 	public static class BooleanProvider extends ConsumptionProvider<Boolean> {
 		@Override
-		public Boolean provide(ICommandArguments args) throws DispatcherException {
-			switch (args.next().toString()) {
+		public Boolean provide(ICommandArguments args, Parameter param) throws DispatcherException {
+			switch (args.next()) {
 				case "true":
 				case "yes":
 				case "y":

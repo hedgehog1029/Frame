@@ -13,6 +13,8 @@ public class CommandDispatcher {
 			Object[] transformed = this.transformer.transform(arguments, command.getWrappedMethod().getParameters(), namespace);
 
 			command.getWrappedMethod().invoke(transformed);
+		} catch (IndexOutOfBoundsException e) {
+			// Problem with arguments. In future this should be handled differently
 		} catch (UnsupportedTypeException e) {
 			// TODO: Not sure how to get these out. Possibly an interface so the user can do whatever with it?
 			e.printStackTrace();

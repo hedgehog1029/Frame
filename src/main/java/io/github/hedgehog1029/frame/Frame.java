@@ -8,7 +8,7 @@ import io.github.hedgehog1029.frame.inject.Injector;
 import io.github.hedgehog1029.frame.module.ModuleLoader;
 import io.github.hedgehog1029.frame.util.IBindingProvider;
 
-class Frame {
+public class Frame {
 	private CommandDispatcher dispatcher;
 	private ModuleLoader loader;
 	private FrameInjector injector;
@@ -18,8 +18,6 @@ class Frame {
 		this.dispatcher = new CommandDispatcher();
 		this.loader = new ModuleLoader();
 		this.injector = new FrameInjector();
-
-		this.injector.injector(new CommandInjector(this.dispatcher, this.commandFactory));
 	}
 
 	/**
@@ -62,6 +60,8 @@ class Frame {
 	 * Traverses all modules with the injector and builds the command graph.
 	 */
 	public void go() {
+		this.injector.injector(new CommandInjector(this.dispatcher, this.commandFactory));
+
 		this.injector.injectAll(this.loader);
 	}
 }

@@ -2,6 +2,7 @@ package io.github.hedgehog1029.frame.module;
 
 import io.github.hedgehog1029.frame.dispatcher.bindings.TypeToken;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -27,8 +28,8 @@ public class ModuleLoader {
 		loadedModules.put(module.getTypeToken(), module);
 	}
 
-	public <T> void loadModule(Class<T> clazz) throws IllegalAccessException, InstantiationException {
-		T instance = clazz.newInstance();
+	public <T> void loadModule(Class<T> clazz) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+		T instance = clazz.getDeclaredConstructor().newInstance();
 
 		this.loadModule(instance);
 	}
