@@ -49,7 +49,7 @@ public class LoadedModule<T> implements IModule<T> {
 
 		for (Method m : this.getModuleClass().getDeclaredMethods()) {
 			if (m.isAnnotationPresent(clazz)) {
-				methods.add(new MethodWrapper(this, m));
+				methods.add(new MethodWrapper(instance, m));
 			}
 		}
 

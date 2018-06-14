@@ -22,6 +22,9 @@ public class BindingList {
 	}
 
 	public <T> Provider<T> getProvider(TypeToken<T> key) {
+		if (!bindings.containsKey(key.getType()))
+			return null;
+
 		return this.getBinding(key).getValue();
 	}
 }
