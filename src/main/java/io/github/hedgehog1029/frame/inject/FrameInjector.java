@@ -25,5 +25,7 @@ public class FrameInjector {
 				}
 			}
 		}
+
+		injectors.forEach(Injector::cleanup);
     }
 }

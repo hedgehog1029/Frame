@@ -60,6 +60,10 @@ public class Frame {
 		return this.commandFactory;
 	}
 
+	public CommandDispatcher getDispatcher() {
+		return dispatcher;
+	}
+
 	/**
 	 * Traverses all modules with the injector and builds the command graph.
 	 */
