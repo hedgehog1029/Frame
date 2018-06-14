@@ -2,6 +2,7 @@ package io.github.hedgehog1029.frame.dispatcher.pipeline;
 
 import io.github.hedgehog1029.frame.dispatcher.exception.CommandNotFoundException;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
+import io.github.hedgehog1029.frame.dispatcher.exception.UsageException;
 import io.github.hedgehog1029.frame.util.Namespace;
 
 import java.util.Deque;
@@ -12,7 +13,7 @@ import java.util.HashMap;
  * Licensed under MIT.
  */
 public class GroupPipeline implements IPipeline {
-	private HashMap<String, IPipeline> pipelines; // TODO: A better command graph
+	private HashMap<String, IPipeline> pipelines = new HashMap<>(); // TODO: A better command graph
 	private String[] aliases;
 
 	public GroupPipeline(String... aliases) {
@@ -30,6 +31,10 @@ public class GroupPipeline implements IPipeline {
 
 	@Override
 	public void call(Deque<String> arguments, Namespace namespace) throws DispatcherException {
+		if (arguments.isEmpty()) {
+			throw new UsageException();
+		}
+
 		String key = arguments.pop();
 
 		if (pipelines.containsKey(key))
