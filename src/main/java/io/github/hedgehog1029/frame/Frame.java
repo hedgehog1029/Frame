@@ -9,6 +9,7 @@ import io.github.hedgehog1029.frame.inject.FrameInjector;
 import io.github.hedgehog1029.frame.inject.Injector;
 import io.github.hedgehog1029.frame.module.ModuleLoader;
 import io.github.hedgehog1029.frame.util.IBindingProvider;
+import io.github.hedgehog1029.frame.util.PrimitiveBindingProvider;
 
 public class Frame {
 	private final CommandDispatcher dispatcher;
@@ -23,6 +24,8 @@ public class Frame {
 		this.injector = injector;
 		this.commandFactory = commandFactory;
 		this.hookCallback = hookCallback;
+
+		this.loadBindings(new PrimitiveBindingProvider());
 	}
 
 	/**

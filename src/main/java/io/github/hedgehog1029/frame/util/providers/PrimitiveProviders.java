@@ -1,5 +1,6 @@
 package io.github.hedgehog1029.frame.util.providers;
 
+import io.github.hedgehog1029.frame.annotation.Text;
 import io.github.hedgehog1029.frame.dispatcher.arguments.ICommandArguments;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.MissingArgumentsException;
@@ -22,6 +23,13 @@ public class PrimitiveProviders {
 	public static class StringProvider extends ConsumptionProvider<String> {
 		@Override
 		public String provide(ICommandArguments args, Parameter param) throws DispatcherException {
+			if (param.isAnnotationPresent(Text.class)) {
+				StringBuilder builder = new StringBuilder(32);
+				while (args.hasNext()) builder.append(args.next());
+
+				return builder.toString();
+			}
+
 			return args.next();
 		}
 	}
