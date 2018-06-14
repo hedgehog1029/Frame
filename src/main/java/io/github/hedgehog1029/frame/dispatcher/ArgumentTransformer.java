@@ -46,8 +46,8 @@ public class ArgumentTransformer {
 
 			Object provided = p.provide(boundArgs, param);
 
-			if (provided == null && param.isAnnotationPresent(Optional.class)) {
-				throw new MissingArgumentsException(param);
+			if (provided == null && !param.isAnnotationPresent(Optional.class)) {
+				throw new MissingArgumentsException(param); // TODO: this might not be necessary
 			}
 
 			transformed.add(provided);

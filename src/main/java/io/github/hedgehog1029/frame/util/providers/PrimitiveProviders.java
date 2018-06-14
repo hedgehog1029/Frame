@@ -25,9 +25,12 @@ public class PrimitiveProviders {
 		public String provide(ICommandArguments args, Parameter param) throws DispatcherException {
 			if (param.isAnnotationPresent(Text.class)) {
 				StringBuilder builder = new StringBuilder(32);
-				while (args.hasNext()) builder.append(args.next());
+				while (args.hasNext()) {
+					builder.append(args.next());
+					builder.append(' ');
+				}
 
-				return builder.toString();
+				return builder.toString().trim();
 			}
 
 			return args.next();
