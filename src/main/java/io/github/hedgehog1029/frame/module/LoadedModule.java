@@ -4,6 +4,7 @@ import io.github.hedgehog1029.frame.dispatcher.bindings.TypeToken;
 import io.github.hedgehog1029.frame.module.wrappers.MethodWrapper;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,5 +55,22 @@ public class LoadedModule<T> implements IModule<T> {
 		}
 
 		return methods;
+	}
+
+	public List<Field> getFieldsWithAnnotation(Class<? extends Annotation> clazz) {
+		List<Field> fields = new ArrayList<>();
+
+		for (Field f : this.getModuleClass().getDeclaredFields()) {
+			if (f.isAnnotationPresent(clazz)) {
+				fields.add(f);
+			}
+		}
+
+		return fields;
+	}
+
+	@Override
+	public String toString() {
+		return this.getModuleClass().getName();
 	}
 }

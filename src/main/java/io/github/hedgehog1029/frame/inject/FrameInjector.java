@@ -15,7 +15,15 @@ public class FrameInjector {
 
     public void injectAll(ModuleLoader loader) {
 		for (LoadedModule module : loader.getAllModules()) {
-			injectors.forEach(injector -> injector.inject(module));
+			for (Injector injector : injectors) {
+				try {
+					injector.inject(module);
+				} catch (Exception e) {
+					System.out.println(String.format("Injector %s threw an exception while traversing module %s",
+							injector.getClass().getSimpleName(), module));
+					e.printStackTrace();
+				}
+			}
 		}
     }
 }
