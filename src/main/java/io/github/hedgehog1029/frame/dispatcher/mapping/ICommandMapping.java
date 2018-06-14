@@ -8,4 +8,5 @@ public interface ICommandMapping {
 	String[] getAliases();
 	String getPrimaryAlias();
 	String getDescription();
+	String getUsage();
 }

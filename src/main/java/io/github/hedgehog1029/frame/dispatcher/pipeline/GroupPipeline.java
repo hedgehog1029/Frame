@@ -58,4 +58,9 @@ public class GroupPipeline implements IPipeline {
 	public String getDescription() {
 		return "A group command"; // TODO: this
 	}
+
+	@Override
+	public String getUsage() {
+		return "[subcommand]";
+	}
 }

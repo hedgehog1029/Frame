@@ -24,16 +24,24 @@ public class CommandMapping implements IPipeline {
 		this.wrappedMethod = wrappedMethod;
 	}
 
+	@Override
 	public String[] getAliases() {
 		return this.commandMetadata.aliases();
 	}
 
+	@Override
 	public String getPrimaryAlias() {
 		return this.commandMetadata.aliases()[0];
 	}
 
+	@Override
 	public String getDescription() {
 		return this.commandMetadata.description();
+	}
+
+	@Override
+	public String getUsage() {
+		return this.wrappedMethod.getUsage();
 	}
 
 	public MethodWrapper getWrappedMethod() {
