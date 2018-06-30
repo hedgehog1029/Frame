@@ -28,17 +28,25 @@ public class CommandInjector implements Injector {
 
 	@Override
 	public void inject(LoadedModule<?> module) {
+		Group moduleGroupInfo = null;
+		if (module.getModuleClass().isAnnotationPresent(Group.class)) {
+			moduleGroupInfo = module.getModuleClass().getAnnotation(Group.class);
+		}
+
 		for (MethodWrapper method : module.getMethodsWithAnnotation(Command.class)) {
 			Command commandAnnotation = method.getAnnotation(Command.class);
 			Group groupInfo = method.getAnnotation(Group.class);
+			if (groupInfo == null && moduleGroupInfo != null)
+				groupInfo = moduleGroupInfo;
 
 			CommandMapping mapping = new CommandMapping(dispatcher, commandAnnotation, method);
 
 			if (groupInfo != null) {
-				String name = groupInfo.value();
+				String[] aliases = groupInfo.value();
+				String name = aliases[0];
 
 				if (!groups.containsKey(name)) {
-					GroupPipeline group = new GroupPipeline(name);
+					GroupPipeline group = new GroupPipeline(aliases);
 					groups.put(name, group);
 
 					this.factory.registerCommand(group);

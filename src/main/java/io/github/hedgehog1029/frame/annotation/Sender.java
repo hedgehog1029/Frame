@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
  * Licensed under MIT.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-public @interface Group {
-	String[] value();
+@Target(ElementType.PARAMETER)
+public @interface Sender {
 }

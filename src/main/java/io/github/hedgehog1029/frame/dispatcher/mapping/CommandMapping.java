@@ -2,12 +2,17 @@ package io.github.hedgehog1029.frame.dispatcher.mapping;
 
 import io.github.hedgehog1029.frame.annotation.Command;
 import io.github.hedgehog1029.frame.dispatcher.CommandDispatcher;
+import io.github.hedgehog1029.frame.dispatcher.bindings.TypeToken;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.pipeline.IPipeline;
+import io.github.hedgehog1029.frame.dispatcher.provider.Provider;
 import io.github.hedgehog1029.frame.module.wrappers.MethodWrapper;
 import io.github.hedgehog1029.frame.util.Namespace;
 
+import java.lang.reflect.Parameter;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 
 /**
  * Written by @offbeatwitch.
@@ -51,5 +56,18 @@ public class CommandMapping implements IPipeline {
 	@Override
 	public void call(Deque<String> arguments, Namespace namespace) throws DispatcherException {
 		this.dispatcher.dispatch(this, arguments.toArray(new String[0]), namespace);
+	}
+
+	@Override
+	public List<String> getCompletions(List<String> current) {
+		int param = current.size() - 1;
+
+		List<Parameter> parameters = this.wrappedMethod.getRequiredParameters();
+		if (param >= parameters.size()) return Collections.emptyList();
+
+		Provider<?> provider = this.dispatcher.getTransformer().getProvider(
+				TypeToken.get(parameters.get(param).getType())
+		);
+		return provider.getSuggestions(current.get(param));
 	}
 }

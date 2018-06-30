@@ -5,6 +5,7 @@ import io.github.hedgehog1029.frame.dispatcher.mapping.ICommandMapping;
 import io.github.hedgehog1029.frame.util.Namespace;
 
 import java.util.Deque;
+import java.util.List;
 
 /**
  * Written by @offbeatwitch.
@@ -12,4 +13,5 @@ import java.util.Deque;
  */
 public interface IPipeline extends ICommandMapping {
 	void call(Deque<String> arguments, Namespace namespace) throws DispatcherException;
+	List<String> getCompletions(List<String> current);
 }

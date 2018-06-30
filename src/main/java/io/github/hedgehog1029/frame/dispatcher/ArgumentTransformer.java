@@ -26,7 +26,6 @@ public class ArgumentTransformer {
 		this.bindings.addBinding(TypeToken.get(clazz), provider);
 	}
 
-	// Problem: optional args don't work here at all
 	public Object[] transform(String[] arguments, List<Parameter> parameters, Namespace namespace) throws DispatcherException, IndexOutOfBoundsException {
 		CommandArgumentsDeque boundArgs = new CommandArgumentsDeque(Arrays.asList(arguments), namespace);
 		List<Object> transformed = new ArrayList<>();
@@ -54,5 +53,9 @@ public class ArgumentTransformer {
 		}
 
 		return transformed.toArray();
+	}
+
+	public <T> Provider<T> getProvider(TypeToken<T> token) {
+		return this.bindings.getProvider(token);
 	}
 }

@@ -5,8 +5,8 @@ import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.UsageException;
 import io.github.hedgehog1029.frame.util.Namespace;
 
-import java.util.Deque;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Written by @offbeatwitch.
@@ -29,6 +29,15 @@ public class GroupPipeline implements IPipeline {
 			this.addPipeline(key, pipeline);
 	}
 
+	public void addAliases(String... additional) {
+		int original = this.aliases.length;
+		this.aliases = Arrays.copyOf(this.aliases, original + additional.length);
+
+		for (int i = 0; i < additional.length; i++) {
+			this.aliases[original + i] = additional[i];
+		}
+	}
+
 	@Override
 	public void call(Deque<String> arguments, Namespace namespace) throws DispatcherException {
 		if (arguments.isEmpty()) {
@@ -42,6 +51,23 @@ public class GroupPipeline implements IPipeline {
 		else {
 			throw new CommandNotFoundException(key);
 		}
+	}
+
+	@Override
+	public List<String> getCompletions(List<String> current) {
+		if (current.size() == 0) current.add("");
+		if (current.size() == 1) {
+			String partial = current.get(0);
+
+			return this.pipelines.keySet().stream().filter((s) -> s.startsWith(partial)).collect(Collectors.toList());
+		}
+
+		String complete = current.get(0);
+		if (pipelines.containsKey(complete)) {
+			return pipelines.get(complete).getCompletions(current.subList(1, current.size()));
+		}
+
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -61,6 +87,8 @@ public class GroupPipeline implements IPipeline {
 
 	@Override
 	public String getUsage() {
-		return "[subcommand]";
+		String commands = String.join("/", pipelines.keySet());
+
+		return String.format("<%s>", commands);
 	}
 }

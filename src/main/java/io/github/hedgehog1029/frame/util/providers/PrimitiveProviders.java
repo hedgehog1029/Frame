@@ -7,20 +7,24 @@ import io.github.hedgehog1029.frame.dispatcher.exception.MissingArgumentsExcepti
 import io.github.hedgehog1029.frame.dispatcher.provider.Provider;
 
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Written by @offbeatwitch.
  * Licensed under MIT.
  */
 public class PrimitiveProviders {
-	static abstract class ConsumptionProvider<T> implements Provider<T> {
+	static abstract class PrimitiveProvider<T> implements Provider<T> {
 		@Override
-		public boolean consumesArguments() {
-			return true;
+		public List<String> getSuggestions(String partial) {
+			return Collections.emptyList();
 		}
 	}
 
-	public static class StringProvider extends ConsumptionProvider<String> {
+	public static class StringProvider extends PrimitiveProvider<String> {
 		@Override
 		public String provide(ICommandArguments args, Parameter param) throws DispatcherException {
 			if (param.isAnnotationPresent(Text.class)) {
@@ -37,35 +41,40 @@ public class PrimitiveProviders {
 		}
 	}
 
-	public static class IntegerProvider extends ConsumptionProvider<Integer> {
+	public static class IntegerProvider extends PrimitiveProvider<Integer> {
 		@Override
 		public Integer provide(ICommandArguments args, Parameter param) throws MissingArgumentsException, NumberFormatException {
 			return Integer.valueOf(args.next());
 		}
 	}
 
-	public static class FloatProvider extends ConsumptionProvider<Float> {
+	public static class FloatProvider extends PrimitiveProvider<Float> {
 		@Override
 		public Float provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
 			return Float.valueOf(args.next());
 		}
 	}
 
-	public static class DoubleProvider extends ConsumptionProvider<Double> {
+	public static class DoubleProvider extends PrimitiveProvider<Double> {
 		@Override
 		public Double provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
 			return Double.valueOf(args.next());
 		}
 	}
 
-	public static class ShortProvider extends ConsumptionProvider<Short> {
+	public static class ShortProvider extends PrimitiveProvider<Short> {
 		@Override
 		public Short provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
 			return Short.valueOf(args.next());
 		}
 	}
 
-	public static class BooleanProvider extends ConsumptionProvider<Boolean> {
+	public static class BooleanProvider extends PrimitiveProvider<Boolean> {
+		private static final List<String> suggestions = Arrays.asList(
+				"true", "yes",
+				"false", "no"
+		);
+
 		@Override
 		public Boolean provide(ICommandArguments args, Parameter param) throws DispatcherException {
 			switch (args.next()) {
@@ -80,6 +89,11 @@ public class PrimitiveProviders {
 				default:
 					throw new DispatcherException(); // TODO: throw an actually informative error
 			}
+		}
+
+		@Override
+		public List<String> getSuggestions(String partial) {
+			return suggestions.stream().filter(s -> s.startsWith(partial)).collect(Collectors.toList());
 		}
 	}
 }

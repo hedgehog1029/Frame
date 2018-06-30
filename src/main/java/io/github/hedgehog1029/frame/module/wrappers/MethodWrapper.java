@@ -1,6 +1,7 @@
 package io.github.hedgehog1029.frame.module.wrappers;
 
 import io.github.hedgehog1029.frame.annotation.Optional;
+import io.github.hedgehog1029.frame.annotation.Sender;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 
 import java.lang.annotation.Annotation;
@@ -9,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Written by @offbeatwitch.
@@ -40,10 +42,20 @@ public class MethodWrapper {
 		return Arrays.asList(this.wrappedMethod.getParameters());
 	}
 
+	public List<Parameter> getRequiredParameters() {
+		return this.getParameters().stream()
+				.filter(param -> !(
+						param.isAnnotationPresent(Optional.class) || param.isAnnotationPresent(Sender.class)
+				))
+				.collect(Collectors.toList());
+	}
+
 	public String getUsage() {
 		StringBuilder builder = new StringBuilder();
 
 		for (Parameter parameter : this.getParameters()) {
+			if (parameter.isAnnotationPresent(Sender.class)) continue;
+
 			boolean isOptional = parameter.isAnnotationPresent(Optional.class);
 
 			builder.append(isOptional ? '[' : '<')
