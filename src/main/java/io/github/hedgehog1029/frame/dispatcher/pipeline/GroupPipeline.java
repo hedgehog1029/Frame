@@ -91,4 +91,9 @@ public class GroupPipeline implements IPipeline {
 
 		return String.format("<%s>", commands);
 	}
+
+	@Override
+	public String getPermission() {
+		return "";
+	}
 }

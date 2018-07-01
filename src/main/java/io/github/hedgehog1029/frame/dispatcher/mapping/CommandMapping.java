@@ -49,6 +49,11 @@ public class CommandMapping implements IPipeline {
 		return this.wrappedMethod.getUsage();
 	}
 
+	@Override
+	public String getPermission() {
+		return this.commandMetadata.permission();
+	}
+
 	public MethodWrapper getWrappedMethod() {
 		return wrappedMethod;
 	}

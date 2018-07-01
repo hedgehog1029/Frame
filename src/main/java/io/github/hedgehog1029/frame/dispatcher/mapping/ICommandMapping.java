@@ -9,4 +9,5 @@ public interface ICommandMapping {
 	String getPrimaryAlias();
 	String getDescription();
 	String getUsage();
+	String getPermission();
 }
