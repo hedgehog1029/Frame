@@ -2,6 +2,7 @@ package io.github.hedgehog1029.frame.module.wrappers;
 
 import io.github.hedgehog1029.frame.annotation.Optional;
 import io.github.hedgehog1029.frame.annotation.Sender;
+import io.github.hedgehog1029.frame.dispatcher.exception.CommandCallException;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 
 import java.lang.annotation.Annotation;
@@ -32,9 +33,10 @@ public class MethodWrapper {
 	public void invoke(Object... args) throws DispatcherException {
 		try {
 			this.wrappedMethod.invoke(this.parent, args);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new DispatcherException("Could not call method " + this.wrappedMethod.getName() +
-			" of class " + this.parent.getClass().getName());
+		} catch (IllegalAccessException e) {
+			throw new CommandCallException("The command handler is inaccessible! Contact the plugin author.", e);
+		} catch (InvocationTargetException e) {
+			throw new CommandCallException(e);
 		}
 	}
 
