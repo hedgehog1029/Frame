@@ -46,7 +46,7 @@ public class CommandMapping implements IPipeline {
 
 	@Override
 	public String getUsage() {
-		return this.wrappedMethod.getUsage();
+		return this.dispatcher.getTransformer().getUsage(this.wrappedMethod);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class CommandMapping implements IPipeline {
 	public List<String> getCompletions(List<String> current) {
 		int param = current.size() - 1;
 
-		List<Parameter> parameters = this.wrappedMethod.getRequiredParameters();
+		List<Parameter> parameters = this.dispatcher.getTransformer().getRequiredParameters(this.wrappedMethod);
 		if (param >= parameters.size()) return Collections.emptyList();
 
 		Provider<?> provider = this.dispatcher.getTransformer().getProvider(

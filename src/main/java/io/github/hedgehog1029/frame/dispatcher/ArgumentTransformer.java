@@ -8,12 +8,14 @@ import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.MissingArgumentsException;
 import io.github.hedgehog1029.frame.dispatcher.exception.UnsupportedTypeException;
 import io.github.hedgehog1029.frame.dispatcher.provider.Provider;
+import io.github.hedgehog1029.frame.module.wrappers.MethodWrapper;
 import io.github.hedgehog1029.frame.util.Namespace;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Written by @offbeatwitch.
@@ -53,6 +55,35 @@ public class ArgumentTransformer {
 		}
 
 		return transformed.toArray();
+	}
+
+	public List<Parameter> getRequiredParameters(MethodWrapper method) {
+		return method.getParameters().stream().filter(param -> {
+			TypeToken<?> token = TypeToken.get(param.getType());
+			Provider<?> p = this.bindings.getProvider(token);
+
+			return p.willConsume(param);
+		}).collect(Collectors.toList());
+	}
+
+	public String getUsage(MethodWrapper method) {
+		StringBuilder builder = new StringBuilder();
+
+		for (Parameter parameter : method.getParameters()) {
+			TypeToken<?> type = TypeToken.get(parameter.getType());
+			Provider<?> provider = this.bindings.getProvider(type);
+
+			if (provider != null && !provider.willConsume(parameter)) continue;
+
+			boolean isOptional = parameter.isAnnotationPresent(Optional.class);
+
+			builder.append(isOptional ? '[' : '<')
+					.append(parameter.getName())
+					.append(isOptional ? ']' : '>')
+					.append(' ');
+		}
+
+		return builder.toString().trim();
 	}
 
 	public <T> Provider<T> getProvider(TypeToken<T> token) {

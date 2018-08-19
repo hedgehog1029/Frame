@@ -13,6 +13,7 @@ import java.util.List;
  *
  */
 public interface Provider<T> {
+	boolean willConsume(Parameter param);
 	T provide(ICommandArguments args, Parameter param) throws DispatcherException;
 	List<String> getSuggestions(String partial);
 }

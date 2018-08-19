@@ -22,6 +22,11 @@ public class PrimitiveProviders {
 		public List<String> getSuggestions(String partial) {
 			return Collections.emptyList();
 		}
+
+		@Override
+		public boolean willConsume(Parameter param) {
+			return true;
+		}
 	}
 
 	public static class StringProvider extends PrimitiveProvider<String> {
