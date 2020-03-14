@@ -1,5 +1,6 @@
 package io.github.hedgehog1029.frame.inject;
 
+import io.github.hedgehog1029.frame.logging.FrameLogger;
 import io.github.hedgehog1029.frame.module.LoadedModule;
 import io.github.hedgehog1029.frame.module.ModuleLoader;
 
@@ -13,14 +14,14 @@ public class FrameInjector {
 		return this;
 	}
 
-    public void injectAll(ModuleLoader loader) {
-		for (LoadedModule module : loader.getAllModules()) {
+    public void injectAll(ModuleLoader loader, FrameLogger logger) {
+		for (LoadedModule<?> module : loader.getAllModules()) {
 			for (Injector injector : injectors) {
 				try {
 					injector.inject(module);
 				} catch (Exception e) {
-					System.out.println(String.format("Injector %s threw an exception while traversing module %s",
-							injector.getClass().getSimpleName(), module));
+					logger.severe("Injector '%s' threw an exception while traversing module %s",
+							injector.getClass().getCanonicalName(), module);
 					e.printStackTrace();
 				}
 			}

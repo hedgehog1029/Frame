@@ -7,6 +7,9 @@ import io.github.hedgehog1029.frame.hooks.HookInjector;
 import io.github.hedgehog1029.frame.hooks.IHookCallback;
 import io.github.hedgehog1029.frame.inject.FrameInjector;
 import io.github.hedgehog1029.frame.inject.Injector;
+import io.github.hedgehog1029.frame.logging.FrameLogger;
+import io.github.hedgehog1029.frame.logging.ILogReceiver;
+import io.github.hedgehog1029.frame.logging.SystemLogReceiver;
 import io.github.hedgehog1029.frame.module.ModuleLoader;
 import io.github.hedgehog1029.frame.util.IBindingProvider;
 import io.github.hedgehog1029.frame.util.PrimitiveBindingProvider;
@@ -17,13 +20,16 @@ public class Frame {
 	private final FrameInjector injector;
 	private final ICommandFactory commandFactory;
 	private final IHookCallback hookCallback;
+	private final FrameLogger logger;
 
-	private Frame(CommandDispatcher dispatcher, ModuleLoader loader, FrameInjector injector, ICommandFactory commandFactory, IHookCallback hookCallback) {
+	private Frame(CommandDispatcher dispatcher, ModuleLoader loader, FrameInjector injector,
+	              ICommandFactory commandFactory, IHookCallback hookCallback, ILogReceiver logReceiver) {
 		this.dispatcher = dispatcher;
 		this.loader = loader;
 		this.injector = injector;
 		this.commandFactory = commandFactory;
 		this.hookCallback = hookCallback;
+		this.logger = new FrameLogger(logReceiver);
 
 		this.loadBindings(new PrimitiveBindingProvider());
 	}
@@ -64,15 +70,19 @@ public class Frame {
 		return dispatcher;
 	}
 
+	public FrameLogger getLogger() {
+		return logger;
+	}
+
 	/**
 	 * Traverses all modules with the injector and builds the command graph.
 	 */
 	public void go() {
 		this.injector
 				.injector(new CommandInjector(this.dispatcher, this.commandFactory))
-				.injector(new HookInjector(this.hookCallback));
+				.injector(new HookInjector(this.hookCallback, this.logger));
 
-		this.injector.injectAll(this.loader);
+		this.injector.injectAll(this.loader, this.logger);
 	}
 
 	public static class Builder {
@@ -81,6 +91,7 @@ public class Frame {
 		private FrameInjector injector;
 		private ICommandFactory commandFactory;
 		private IHookCallback hookCallback;
+		private ILogReceiver logReceiver;
 
 		public CommandDispatcher getDispatcher() {
 			return dispatcher;
@@ -127,15 +138,24 @@ public class Frame {
 			return this;
 		}
 
+		public ILogReceiver getLogReceiver() {
+			return logReceiver;
+		}
+
+		public void setLogReceiver(ILogReceiver logReceiver) {
+			this.logReceiver = logReceiver;
+		}
+
 		public Frame build() {
 			if (this.dispatcher == null) this.dispatcher = new CommandDispatcher();
 			if (this.loader == null) this.loader = new ModuleLoader();
 			if (this.injector == null) this.injector = new FrameInjector();
+			if (this.logReceiver == null) this.logReceiver = new SystemLogReceiver();
 			if (this.commandFactory == null) {
 				throw new IllegalStateException("Frame must be configured with a command factory!");
 			}
 
-			return new Frame(dispatcher, loader, injector, commandFactory, hookCallback);
+			return new Frame(dispatcher, loader, injector, commandFactory, hookCallback, logReceiver);
 		}
 	}
 }
