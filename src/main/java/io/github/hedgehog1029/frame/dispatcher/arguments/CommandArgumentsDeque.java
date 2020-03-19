@@ -4,6 +4,7 @@ import io.github.hedgehog1029.frame.dispatcher.exception.MissingArgumentsExcepti
 import io.github.hedgehog1029.frame.util.Namespace;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -11,12 +12,16 @@ import java.util.List;
  * Licensed under MIT.
  */
 public class CommandArgumentsDeque implements ICommandArguments {
-	private final ArrayDeque<String> arguments;
+	private final Deque<String> arguments;
 	private final Namespace namespace;
 
-	public CommandArgumentsDeque(List<String> arguments, Namespace namespace) {
-		this.arguments = new ArrayDeque<>(arguments);
+	public CommandArgumentsDeque(Deque<String> arguments, Namespace namespace) {
+		this.arguments = arguments;
 		this.namespace = namespace;
+	}
+
+	public CommandArgumentsDeque(List<String> arguments, Namespace namespace) {
+		this(new ArrayDeque<>(arguments), namespace);
 	}
 
 	@Override

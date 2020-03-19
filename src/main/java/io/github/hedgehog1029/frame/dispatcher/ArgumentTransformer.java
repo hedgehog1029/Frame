@@ -13,7 +13,7 @@ import io.github.hedgehog1029.frame.util.Namespace;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +28,8 @@ public class ArgumentTransformer {
 		this.bindings.addBinding(TypeToken.get(clazz), provider);
 	}
 
-	public Object[] transform(String[] arguments, List<Parameter> parameters, Namespace namespace) throws DispatcherException, IndexOutOfBoundsException {
-		CommandArgumentsDeque boundArgs = new CommandArgumentsDeque(Arrays.asList(arguments), namespace);
+	protected Object[] transform(Deque<String> arguments, List<Parameter> parameters, Namespace namespace) throws DispatcherException, IndexOutOfBoundsException {
+		CommandArgumentsDeque boundArgs = new CommandArgumentsDeque(arguments, namespace);
 		List<Object> transformed = new ArrayList<>();
 
 		for (Parameter param : parameters) {

@@ -60,7 +60,7 @@ public class CommandMapping implements IPipeline {
 
 	@Override
 	public void call(Deque<String> arguments, Namespace namespace) throws DispatcherException {
-		this.dispatcher.dispatch(this, arguments.toArray(new String[0]), namespace);
+		this.dispatcher.dispatch(this, arguments, namespace);
 	}
 
 	@Override
