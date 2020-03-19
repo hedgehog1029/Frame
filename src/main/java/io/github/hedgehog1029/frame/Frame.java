@@ -142,8 +142,9 @@ public class Frame {
 			return logReceiver;
 		}
 
-		public void setLogReceiver(ILogReceiver logReceiver) {
+		public Builder setLogReceiver(ILogReceiver logReceiver) {
 			this.logReceiver = logReceiver;
+			return this;
 		}
 
 		public Frame build() {
