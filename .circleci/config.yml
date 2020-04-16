@@ -12,6 +12,7 @@ jobs:
   jar:
     executor: java8
     steps:
+      - checkout
       - run:
           name: build JAR
           command: gradle jar
@@ -23,6 +24,4 @@ workflows:
     jobs:
       - gradle/test:
           executor: java8
-      - jar:
-          requires:
-            - gradle/test
+      - jar
