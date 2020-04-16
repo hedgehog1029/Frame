@@ -3,8 +3,3 @@
 
 # Maven
 target/
-
-# Gradle
-gradle/
-./gradlew
-./gradlew.bat
