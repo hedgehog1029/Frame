@@ -54,7 +54,7 @@ public class GroupPipeline implements IPipeline {
 	}
 
 	@Override
-	public List<String> getCompletions(List<String> current) {
+	public List<String> getCompletions(List<String> current, Namespace namespace) {
 		if (current.size() == 0) current.add("");
 		if (current.size() == 1) {
 			String partial = current.get(0);
@@ -64,10 +64,18 @@ public class GroupPipeline implements IPipeline {
 
 		String complete = current.get(0);
 		if (pipelines.containsKey(complete)) {
-			return pipelines.get(complete).getCompletions(current.subList(1, current.size()));
+			return pipelines.get(complete).getCompletions(current.subList(1, current.size()), namespace);
 		}
 
 		return Collections.emptyList();
+	}
+
+	@Override
+	public List<ExecutionPlan> getExecutionPlans() {
+		return pipelines.values().stream()
+				.flatMap(pipeline -> pipeline.getExecutionPlans().stream())
+				.map(plan -> plan.withPrepended(getPrimaryAlias()))
+				.collect(Collectors.toList());
 	}
 
 	@Override

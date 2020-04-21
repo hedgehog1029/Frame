@@ -2,14 +2,14 @@ package io.github.hedgehog1029.frame.dispatcher.mapping;
 
 import io.github.hedgehog1029.frame.annotation.Command;
 import io.github.hedgehog1029.frame.dispatcher.CommandDispatcher;
-import io.github.hedgehog1029.frame.dispatcher.bindings.TypeToken;
+import io.github.hedgehog1029.frame.dispatcher.bindings.BoundMethod;
+import io.github.hedgehog1029.frame.dispatcher.bindings.ParamWithIndex;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
+import io.github.hedgehog1029.frame.dispatcher.pipeline.ExecutionPlan;
 import io.github.hedgehog1029.frame.dispatcher.pipeline.IPipeline;
-import io.github.hedgehog1029.frame.dispatcher.provider.Provider;
 import io.github.hedgehog1029.frame.module.wrappers.MethodWrapper;
 import io.github.hedgehog1029.frame.util.Namespace;
 
-import java.lang.reflect.Parameter;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
@@ -19,14 +19,13 @@ import java.util.List;
  * Licensed under MIT.
  */
 public class CommandMapping implements IPipeline {
-	private final CommandDispatcher dispatcher;
 	private final Command commandMetadata;
-	private final MethodWrapper wrappedMethod;
+	private final BoundMethod boundMethod;
 
 	public CommandMapping(CommandDispatcher dispatcher, Command commandMetadata, MethodWrapper wrappedMethod) {
-		this.dispatcher = dispatcher;
 		this.commandMetadata = commandMetadata;
-		this.wrappedMethod = wrappedMethod;
+
+		this.boundMethod = dispatcher.getTransformer().prepare(wrappedMethod);
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class CommandMapping implements IPipeline {
 
 	@Override
 	public String getUsage() {
-		return this.dispatcher.getTransformer().getUsage(this.wrappedMethod);
+		return this.boundMethod.getUsage();
 	}
 
 	@Override
@@ -54,25 +53,28 @@ public class CommandMapping implements IPipeline {
 		return this.commandMetadata.permission();
 	}
 
-	public MethodWrapper getWrappedMethod() {
-		return wrappedMethod;
+	public BoundMethod getBoundMethod() {
+		return boundMethod;
 	}
 
 	@Override
 	public void call(Deque<String> arguments, Namespace namespace) throws DispatcherException {
-		this.dispatcher.dispatch(this, arguments, namespace);
+		this.boundMethod.invoke(arguments, namespace);
 	}
 
 	@Override
-	public List<String> getCompletions(List<String> current) {
+	public List<String> getCompletions(List<String> current, Namespace namespace) {
 		int param = current.size() - 1;
+		List<ParamWithIndex> paramMap = this.boundMethod.mapParametersToArity();
 
-		List<Parameter> parameters = this.dispatcher.getTransformer().getRequiredParameters(this.wrappedMethod);
-		if (param >= parameters.size()) return Collections.emptyList();
+		if (param >= paramMap.size()) return Collections.emptyList();
 
-		Provider<?> provider = this.dispatcher.getTransformer().getProvider(
-				TypeToken.get(parameters.get(param).getType())
-		);
-		return provider.getSuggestions(current.get(param));
+		ParamWithIndex pwi = paramMap.get(param);
+		return pwi.parameter.getProvider().getSuggestions(pwi.index, current.get(param), namespace);
+	}
+
+	@Override
+	public List<ExecutionPlan> getExecutionPlans() {
+		return this.boundMethod.getExecutionPlans();
 	}
 }

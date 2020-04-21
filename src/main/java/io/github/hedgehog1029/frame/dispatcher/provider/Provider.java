@@ -2,8 +2,9 @@ package io.github.hedgehog1029.frame.dispatcher.provider;
 
 import io.github.hedgehog1029.frame.dispatcher.arguments.ICommandArguments;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
+import io.github.hedgehog1029.frame.module.wrappers.ParameterWrapper;
+import io.github.hedgehog1029.frame.util.Namespace;
 
-import java.lang.reflect.Parameter;
 import java.util.List;
 
 /**
@@ -13,7 +14,9 @@ import java.util.List;
  *
  */
 public interface Provider<T> {
-	boolean willConsume(Parameter param);
-	T provide(ICommandArguments args, Parameter param) throws DispatcherException;
-	List<String> getSuggestions(String partial);
+	boolean willConsume(ParameterWrapper param);
+	T provide(ICommandArguments args, ParameterWrapper param) throws DispatcherException;
+
+	List<String> getSuggestions(int index, String partial, Namespace namespace);
+	int argsWanted(ParameterWrapper param);
 }

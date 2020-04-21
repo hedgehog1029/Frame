@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 group = 'io.github.hedgehog1029'
-version = '1.3.0-PRE'
+version = '1.4.0-PRE'
 
 description = "A plugin framework for Spigot/Bukkit."
 

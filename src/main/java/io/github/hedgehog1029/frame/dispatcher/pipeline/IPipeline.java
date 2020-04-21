@@ -13,5 +13,6 @@ import java.util.List;
  */
 public interface IPipeline extends ICommandMapping {
 	void call(Deque<String> arguments, Namespace namespace) throws DispatcherException;
-	List<String> getCompletions(List<String> current);
+	List<String> getCompletions(List<String> current, Namespace namespace);
+	List<ExecutionPlan> getExecutionPlans();
 }
