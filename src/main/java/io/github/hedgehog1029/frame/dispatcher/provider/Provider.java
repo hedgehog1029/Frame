@@ -14,7 +14,6 @@ import java.util.List;
  *
  */
 public interface Provider<T> {
-	boolean willConsume(ParameterWrapper param);
 	T provide(ICommandArguments args, ParameterWrapper param) throws DispatcherException;
 
 	List<String> getSuggestions(int index, String partial, Namespace namespace);

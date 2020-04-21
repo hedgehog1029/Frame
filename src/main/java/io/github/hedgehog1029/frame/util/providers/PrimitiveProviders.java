@@ -5,8 +5,9 @@ import io.github.hedgehog1029.frame.dispatcher.arguments.ICommandArguments;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.MissingArgumentsException;
 import io.github.hedgehog1029.frame.dispatcher.provider.Provider;
+import io.github.hedgehog1029.frame.module.wrappers.ParameterWrapper;
+import io.github.hedgehog1029.frame.util.Namespace;
 
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -19,19 +20,19 @@ import java.util.stream.Collectors;
 public class PrimitiveProviders {
 	static abstract class PrimitiveProvider<T> implements Provider<T> {
 		@Override
-		public List<String> getSuggestions(String partial) {
+		public List<String> getSuggestions(int index, String partial, Namespace namespace) {
 			return Collections.emptyList();
 		}
 
 		@Override
-		public boolean willConsume(Parameter param) {
-			return true;
+		public int argsWanted(ParameterWrapper param) {
+			return 1;
 		}
 	}
 
 	public static class StringProvider extends PrimitiveProvider<String> {
 		@Override
-		public String provide(ICommandArguments args, Parameter param) throws DispatcherException {
+		public String provide(ICommandArguments args, ParameterWrapper param) throws DispatcherException {
 			if (param.isAnnotationPresent(Text.class)) {
 				StringBuilder builder = new StringBuilder(32);
 				while (args.hasNext()) {
@@ -48,28 +49,28 @@ public class PrimitiveProviders {
 
 	public static class IntegerProvider extends PrimitiveProvider<Integer> {
 		@Override
-		public Integer provide(ICommandArguments args, Parameter param) throws MissingArgumentsException, NumberFormatException {
+		public Integer provide(ICommandArguments args, ParameterWrapper param) throws MissingArgumentsException, NumberFormatException {
 			return Integer.valueOf(args.next());
 		}
 	}
 
 	public static class FloatProvider extends PrimitiveProvider<Float> {
 		@Override
-		public Float provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
+		public Float provide(ICommandArguments args, ParameterWrapper param) throws DispatcherException, NumberFormatException {
 			return Float.valueOf(args.next());
 		}
 	}
 
 	public static class DoubleProvider extends PrimitiveProvider<Double> {
 		@Override
-		public Double provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
+		public Double provide(ICommandArguments args, ParameterWrapper param) throws DispatcherException, NumberFormatException {
 			return Double.valueOf(args.next());
 		}
 	}
 
 	public static class ShortProvider extends PrimitiveProvider<Short> {
 		@Override
-		public Short provide(ICommandArguments args, Parameter param) throws DispatcherException, NumberFormatException {
+		public Short provide(ICommandArguments args, ParameterWrapper param) throws DispatcherException, NumberFormatException {
 			return Short.valueOf(args.next());
 		}
 	}
@@ -81,7 +82,7 @@ public class PrimitiveProviders {
 		);
 
 		@Override
-		public Boolean provide(ICommandArguments args, Parameter param) throws DispatcherException {
+		public Boolean provide(ICommandArguments args, ParameterWrapper param) throws DispatcherException {
 			switch (args.next()) {
 				case "true":
 				case "yes":
@@ -97,7 +98,7 @@ public class PrimitiveProviders {
 		}
 
 		@Override
-		public List<String> getSuggestions(String partial) {
+		public List<String> getSuggestions(int index, String partial, Namespace namespace) {
 			return suggestions.stream().filter(s -> s.startsWith(partial)).collect(Collectors.toList());
 		}
 	}
