@@ -48,8 +48,6 @@ public class CommandInjector implements Injector {
 				if (!groups.containsKey(name)) {
 					GroupPipeline group = new GroupPipeline(aliases);
 					groups.put(name, group);
-
-					this.factory.registerCommand(group);
 				}
 
 				groups.get(name).addPipelines(mapping.getAliases(), mapping);
@@ -61,6 +59,8 @@ public class CommandInjector implements Injector {
 
 	@Override
 	public void cleanup() {
+		this.groups.forEach((key, mapping) ->
+				this.factory.registerCommand(mapping));
 		this.groups.clear();
 	}
 }
