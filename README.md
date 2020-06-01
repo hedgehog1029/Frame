@@ -1,5 +1,6 @@
 # Frame [![Discord](https://img.shields.io/badge/discord-join-7286da.svg)](https://discord.gg/PWNHf)
 [![CircleCI](https://img.shields.io/circleci/project/hedgehog1029/Frame.svg)](https://circleci.com/gh/hedgehog1029/Frame/)
+[![Maven](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.offbeatwit.ch%2Frepository%2Freleases%2Fio%2Fgithub%2Fhedgehog1029%2Fframe%2Fmaven-metadata.xml)](https://maven.offbeatwit.ch/#artifact/io.github.hedgehog1029/frame)
 
 A plugin framework for Spigot and Bukkit.
 
@@ -21,9 +22,25 @@ A Frame mod for Forge may be available in future.
 
 # Developer Usage
 If you're using Bukkit, you'll want to grab a FrameBukkit release instead.
+(The release of this is pending! Just working on polishing it up.)
 
-If you're using Frame in a standalone project, you will be able to add
-it as a  Gradle dependency when I get around to figuring that out.
+If you're using Frame in a standalone project, you can add it to your
+Gradle configuration (or any other build system, really) via a Maven
+dependency:
+
+```groovy
+repositories {
+    maven {
+        url = 'https://maven.offbeatwit.ch/repository/releases'
+    }
+}
+
+dependencies {
+    // among your other dependencies
+    implementation "io.github.hedgehog1029:frame:1.4.1"
+}
+```
+
 
 ## Developer Guide
 
