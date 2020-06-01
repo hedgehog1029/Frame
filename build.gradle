@@ -1,24 +1,67 @@
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 group = 'io.github.hedgehog1029'
-version = '1.4.0-PRE'
+version = '1.4.1'
 
 description = "A plugin framework for Spigot/Bukkit."
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-uploadArchives {
+java {
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'frame'
+
+            from components.java
+
+            pom {
+                name = 'Frame'
+                description = project.description
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://spdx.org/licenses/MIT.html'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'obw'
+                        name = 'offbeatwitch'
+                        email = 'obw@generalprogramming.org'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/hedgehog1029/Frame.git'
+                    url = 'https://github.com/hedgehog1029/Frame'
+                }
+            }
+        }
+    }
+
     repositories {
-        mavenDeployer {
-            mavenLocal()
+        maven {
+            url = 'https://maven.offbeatwit.ch/repository/releases/'
+
+            credentials(PasswordCredentials) {
+                username = project.property('archiva.user')
+                password = project.property('archiva.password')
+            }
         }
     }
 }
 
 repositories {
-     maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
