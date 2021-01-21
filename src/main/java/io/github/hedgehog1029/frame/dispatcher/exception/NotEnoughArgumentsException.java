@@ -1,25 +1,20 @@
 package io.github.hedgehog1029.frame.dispatcher.exception;
 
-import java.lang.reflect.Parameter;
+import io.github.hedgehog1029.frame.module.wrappers.ParameterWrapper;
 
 /**
  * Written by @offbeatwitch.
  * Licensed under MIT.
  */
 public class NotEnoughArgumentsException extends DispatcherException {
-	private String[] arguments;
-	private Parameter[] parameters;
+	private final ParameterWrapper parameter;
 
-	public NotEnoughArgumentsException(String[] arguments, Parameter[] parameters) {
-		this.arguments = arguments;
-		this.parameters = parameters;
+	public NotEnoughArgumentsException(ParameterWrapper param) {
+		super("Expected value for non-optional parameter " + param.getName());
+		this.parameter = param;
 	}
 
-	public String[] getArguments() {
-		return arguments;
-	}
-
-	public Parameter[] getParameters() {
-		return parameters;
+	public ParameterWrapper getParameter() {
+		return parameter;
 	}
 }

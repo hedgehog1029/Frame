@@ -2,6 +2,7 @@ package io.github.hedgehog1029.frame.dispatcher.bindings;
 
 import io.github.hedgehog1029.frame.dispatcher.arguments.CommandArgumentsDeque;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
+import io.github.hedgehog1029.frame.dispatcher.exception.NotEnoughArgumentsException;
 import io.github.hedgehog1029.frame.dispatcher.pipeline.ExecutionPlan;
 import io.github.hedgehog1029.frame.module.wrappers.MethodWrapper;
 import io.github.hedgehog1029.frame.module.wrappers.ParameterWrapper;
@@ -101,6 +102,10 @@ public class BoundMethod {
 			}
 
 			Object provided = param.getProvider().provide(boundArgs, param);
+			if (provided == null && !param.isOptional()) {
+				throw new NotEnoughArgumentsException(param);
+			}
+
 			transformed.add(provided);
 		}
 
