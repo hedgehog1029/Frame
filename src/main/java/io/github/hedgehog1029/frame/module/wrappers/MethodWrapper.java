@@ -33,7 +33,7 @@ public class MethodWrapper {
 		} catch (IllegalAccessException e) {
 			throw new CommandCallException("The command handler is inaccessible! Contact the plugin author.", e);
 		} catch (InvocationTargetException e) {
-			throw new CommandCallException(e);
+			throw new CommandCallException(e.getCause().getMessage(), e);
 		}
 	}
 
