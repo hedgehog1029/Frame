@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group = 'io.github.hedgehog1029'
-version = '1.4.1'
+version = '1.4.2'
 
 description = "A plugin framework for Spigot/Bukkit."
 
