@@ -2,6 +2,8 @@
 [![CircleCI](https://img.shields.io/circleci/project/hedgehog1029/Frame.svg)](https://circleci.com/gh/hedgehog1029/Frame/)
 [![Maven](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.offbeatwit.ch%2Frepository%2Freleases%2Fio%2Fgithub%2Fhedgehog1029%2Fframe%2Fmaven-metadata.xml)](https://maven.offbeatwit.ch/#artifact/io.github.hedgehog1029/frame)
 
+[![Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/offbeatwitch/donate)
+
 A plugin framework for Spigot and Bukkit.
 
 This branch (v1) is a complete overhaul of Frame. The whole library has
