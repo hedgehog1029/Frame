@@ -21,11 +21,13 @@ import java.util.List;
 public class CommandMapping implements IPipeline {
 	private final Command commandMetadata;
 	private final BoundMethod boundMethod;
+	private final Object module;
 
 	public CommandMapping(CommandDispatcher dispatcher, Command commandMetadata, MethodWrapper wrappedMethod) {
 		this.commandMetadata = commandMetadata;
 
 		this.boundMethod = dispatcher.getTransformer().prepare(wrappedMethod);
+		this.module = wrappedMethod.getParent();
 	}
 
 	@Override
@@ -76,5 +78,10 @@ public class CommandMapping implements IPipeline {
 	@Override
 	public List<ExecutionPlan> getExecutionPlans() {
 		return this.boundMethod.getExecutionPlans();
+	}
+
+	@Override
+	public Class<?> getContainingClass() {
+		return module.getClass();
 	}
 }

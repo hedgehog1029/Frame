@@ -44,4 +44,8 @@ public class MethodWrapper {
 	public <T extends Annotation> T getAnnotation(Class<T> clazz) {
 		return this.wrappedMethod.getAnnotation(clazz);
 	}
+
+	public Object getParent() {
+		return parent;
+	}
 }

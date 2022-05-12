@@ -79,6 +79,13 @@ public class GroupPipeline implements IPipeline {
 	}
 
 	@Override
+	public Class<?> getContainingClass() {
+		return pipelines.values().stream().findAny()
+				.map(IPipeline::getContainingClass)
+				.orElse(null);
+	}
+
+	@Override
 	public String[] getAliases() {
 		return aliases;
 	}
