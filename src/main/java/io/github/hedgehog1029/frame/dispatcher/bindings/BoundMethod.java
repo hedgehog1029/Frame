@@ -1,6 +1,5 @@
 package io.github.hedgehog1029.frame.dispatcher.bindings;
 
-import io.github.hedgehog1029.frame.annotation.Text;
 import io.github.hedgehog1029.frame.dispatcher.arguments.CommandArgumentsDeque;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.NotEnoughArgumentsException;
@@ -81,17 +80,11 @@ public class BoundMethod {
 			int i = 0;
 			while (arity > 0) {
 				ParameterWrapper pw = visibleParams.get(i++);
-				boolean isGreedy = pw.isAnnotationPresent(Text.class);
 
 				for (int n = 0; n < pw.getWillConsume(); n++) {
 					String name = pw.getName() + (n == 0 ? "" : n);
 
-					if (isGreedy) {
-						nodes.add(new ArgumentNode.GreedyString(name));
-						// do we assert that getWillConsume() == 1 here?
-					} else {
-						nodes.add(new ArgumentNode.SingleString(name));
-					}
+					nodes.add(pw.getProvider().makeNode(name, pw));
 				}
 
 				arity -= pw.getWillConsume();
