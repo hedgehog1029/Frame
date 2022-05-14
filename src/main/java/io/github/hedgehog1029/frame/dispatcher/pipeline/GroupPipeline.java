@@ -74,8 +74,8 @@ public class GroupPipeline implements IPipeline {
 	@Override
 	public List<ExecutionPlan> getExecutionPlans() {
 		return pipelines.values().stream()
-				.flatMap(pipeline -> pipeline.getExecutionPlans().stream())
-				.map(plan -> plan.withPrepended(new ArgumentNode.Literal(getPrimaryAlias())))
+				.flatMap(pipeline -> pipeline.getExecutionPlans().stream()
+						.map(plan -> plan.withPrepended(new ArgumentNode.Literal(pipeline.getPrimaryAlias()))))
 				.collect(Collectors.toList());
 	}
 
