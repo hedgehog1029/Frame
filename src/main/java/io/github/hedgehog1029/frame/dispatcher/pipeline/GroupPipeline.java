@@ -3,6 +3,7 @@ package io.github.hedgehog1029.frame.dispatcher.pipeline;
 import io.github.hedgehog1029.frame.dispatcher.exception.CommandNotFoundException;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.UsageException;
+import io.github.hedgehog1029.frame.dispatcher.mapping.ICommandMapping;
 import io.github.hedgehog1029.frame.util.Namespace;
 
 import java.util.*;
@@ -74,7 +75,7 @@ public class GroupPipeline implements IPipeline {
 	public List<ExecutionPlan> getExecutionPlans() {
 		return pipelines.values().stream()
 				.flatMap(pipeline -> pipeline.getExecutionPlans().stream())
-				.map(plan -> plan.withPrepended(getPrimaryAlias()))
+				.map(plan -> plan.withPrepended(new ArgumentNode.Literal(getPrimaryAlias())))
 				.collect(Collectors.toList());
 	}
 
@@ -109,6 +110,9 @@ public class GroupPipeline implements IPipeline {
 
 	@Override
 	public String getPermission() {
-		return "";
+		// TODO fix group permissions
+		return pipelines.values().stream().findFirst()
+				.map(ICommandMapping::getPermission)
+				.orElse("");
 	}
 }

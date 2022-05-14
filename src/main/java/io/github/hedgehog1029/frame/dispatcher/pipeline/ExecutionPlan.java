@@ -8,20 +8,20 @@ import java.util.List;
  */
 public class ExecutionPlan {
 	public final int arity;
-	private List<String> parameterNames;
+	private List<ArgumentNode> arguments;
 
-	public ExecutionPlan(int arity, List<String> parameterNames) {
+	public ExecutionPlan(int arity, List<ArgumentNode> arguments) {
 		this.arity = arity;
-		this.parameterNames = parameterNames;
+		this.arguments = arguments;
 	}
 
-	public List<String> getParameterNames() {
-		return parameterNames;
+	public List<ArgumentNode> getArguments() {
+		return arguments;
 	}
 
-	public ExecutionPlan withPrepended(String name) {
-		ArrayList<String> paramsCopy = new ArrayList<>(parameterNames);
-		paramsCopy.add(0, name);
+	public ExecutionPlan withPrepended(ArgumentNode node) {
+		ArrayList<ArgumentNode> paramsCopy = new ArrayList<>(arguments);
+		paramsCopy.add(0, node);
 
 		return new ExecutionPlan(arity + 1, paramsCopy);
 	}

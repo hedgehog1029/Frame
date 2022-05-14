@@ -1,8 +1,10 @@
 package io.github.hedgehog1029.frame.dispatcher.bindings;
 
+import io.github.hedgehog1029.frame.annotation.Text;
 import io.github.hedgehog1029.frame.dispatcher.arguments.CommandArgumentsDeque;
 import io.github.hedgehog1029.frame.dispatcher.exception.DispatcherException;
 import io.github.hedgehog1029.frame.dispatcher.exception.NotEnoughArgumentsException;
+import io.github.hedgehog1029.frame.dispatcher.pipeline.ArgumentNode;
 import io.github.hedgehog1029.frame.dispatcher.pipeline.ExecutionPlan;
 import io.github.hedgehog1029.frame.module.wrappers.MethodWrapper;
 import io.github.hedgehog1029.frame.module.wrappers.ParameterWrapper;
@@ -74,20 +76,28 @@ public class BoundMethod {
 
 		return getAllArities().stream().map(targetArity -> {
 			int arity = targetArity;
-			List<String> neededNames = new ArrayList<>();
+			List<ArgumentNode> nodes = new ArrayList<>();
 
 			int i = 0;
 			while (arity > 0) {
 				ParameterWrapper pw = visibleParams.get(i++);
+				boolean isGreedy = pw.isAnnotationPresent(Text.class);
 
 				for (int n = 0; n < pw.getWillConsume(); n++) {
-					neededNames.add(pw.getName() + (n == 0 ? "" : n));
+					String name = pw.getName() + (n == 0 ? "" : n);
+
+					if (isGreedy) {
+						nodes.add(new ArgumentNode.GreedyString(name));
+						// do we assert that getWillConsume() == 1 here?
+					} else {
+						nodes.add(new ArgumentNode.SingleString(name));
+					}
 				}
 
 				arity -= pw.getWillConsume();
 			}
 
-			return new ExecutionPlan(arity, neededNames);
+			return new ExecutionPlan(targetArity, nodes);
 		}).collect(Collectors.toList());
 	}
 
