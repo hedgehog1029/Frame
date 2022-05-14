@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'io.github.hedgehog1029'
-version = '1.4.3'
+version = '1.5.0-SNAPSHOT'
 
 description = "A plugin framework for Spigot/Bukkit."
 
@@ -51,7 +51,10 @@ publishing {
 
     repositories {
         maven {
-            url = 'https://maven.offbeatwit.ch/repository/releases/'
+            def releasesUrl = 'https://maven.offbeatwit.ch/repository/releases/'
+            def snapshotsUrl = 'https://maven.offbeatwit.ch/repository/snapshots/'
+
+            url = version.endsWith('SNAPSHOT') ? snapshotsUrl : releasesUrl
 
             credentials(PasswordCredentials) {
                 username = project.property('archiva.user')
